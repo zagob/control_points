@@ -1,5 +1,16 @@
 import { initializeApp } from "firebase/app";
 import {
+  getFirestore,
+  addDoc,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  setDoc,
+  query,
+  getDoc,
+} from "firebase/firestore";
+import {
   GoogleAuthProvider,
   signInWithPopup,
   onAuthStateChanged,
@@ -20,6 +31,8 @@ const app = initializeApp(firebaseConfig);
 
 const auth = getAuth();
 
+const db = getFirestore(app);
+
 export {
   auth,
   app,
@@ -27,4 +40,13 @@ export {
   signInWithPopup,
   onAuthStateChanged,
   signOut,
+  db,
+  addDoc,
+  query,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  getDoc,
+  collection,
 };

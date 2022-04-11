@@ -1,3 +1,4 @@
+import { Unsubscribe } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { createContext, ReactNode, useState } from "react";
@@ -8,6 +9,11 @@ import {
   auth,
   signOut,
   onAuthStateChanged,
+  setDoc,
+  doc,
+  getDoc,
+  updateDoc,
+  db,
 } from "../services/Firebase";
 
 interface AuthProviderProps {
@@ -24,13 +30,41 @@ interface AuthContextProps {
   user: User | undefined;
   signInWithGoogle: () => Promise<void>;
   signOutAuthenticate: () => Promise<void>;
+  handleAuthState: () => Promise<void>;
 }
 
 export const AuthContext = createContext({} as AuthContextProps);
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User>();
-  console.log(user)
+  console.log(user);
+
+  async function handleAuthState() {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const { displayName, uid, photoURL } = user;
+
+        const ref = doc(db, "users", uid);
+        const docExist = await getDoc(ref);
+
+        if (docExist.exists()) {
+          await updateDoc(ref, {
+            id: uid,
+            name: displayName,
+          });
+        } else {
+          await setDoc(doc(db, "users", uid), {
+            id: uid,
+            name: displayName,
+          });
+        }
+      }
+    });
+
+    // return () => {
+    //   unsubscribe();
+    // };
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -72,7 +106,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
   return (
     <AuthContext.Provider
-      value={{ user, signInWithGoogle, signOutAuthenticate }}
+      value={{ user, signInWithGoogle, signOutAuthenticate, handleAuthState }}
     >
       {children}
     </AuthContext.Provider>

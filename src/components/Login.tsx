@@ -2,8 +2,15 @@ import { Box, Button, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 import { IoMdClock } from "react-icons/io";
 import { InputTime } from "../components/InputTime";
 import { FcGoogle } from "react-icons/fc";
+import { useAuth } from "../hooks/useAuth";
 
 export function Login() {
+  const { signInWithGoogle, handleAuthState } = useAuth();
+
+  async function signAndCreateUserDB() {
+    await signInWithGoogle();
+    await handleAuthState();
+  }
   return (
     <Flex w="100%" alignItems="center" justify="center" height="100vh">
       <Flex gap="10px" flexDirection="column" alignItems="center">
@@ -64,6 +71,7 @@ export function Login() {
             gap="12px"
             color="#fff"
             _hover={{ opacity: "0.8" }}
+            onClick={signAndCreateUserDB}
           >
             <FcGoogle fontSize="32px" />
             Fazer login com Google

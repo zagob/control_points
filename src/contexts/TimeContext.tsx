@@ -73,15 +73,15 @@ export function TimeProvider({ children }: TimeProviderProps) {
   }
 
   function handleCalculateHoursPoint(
-    entry: string,
-    exitLunch: string,
-    backLunch: string,
-    exit: string
+    entryOne: string,
+    exitOne: string,
+    entryTwo: string,
+    exitTwo: string
   ) {
-    const entryDate = parseISO(`${newDate} ${entry}`);
-    const exitLunchDate = parseISO(`${newDate} ${exitLunch}`);
-    const backLunchDate = parseISO(`${newDate} ${backLunch}`);
-    const exitDate = parseISO(`${newDate} ${exit}`);
+    const entryDate = parseISO(`${newDate} ${entryOne}`);
+    const exitLunchDate = parseISO(`${newDate} ${exitOne}`);
+    const backLunchDate = parseISO(`${newDate} ${entryTwo}`);
+    const exitDate = parseISO(`${newDate} ${exitTwo}`);
 
     const returnObjEntryAndExitLunch = convertDataTime(
       entryDate,
@@ -105,18 +105,28 @@ export function TimeProvider({ children }: TimeProviderProps) {
       "Tempo de volta do almoco e saida",
       convertTimeToString(returnObjEntryAndExit)
     );
-    const returnObjTotalTimeWork = convertTotalTimeWork(
+    const objTotalTimeWork = convertTotalTimeWork(
       returnObjEntryAndExitLunch,
       returnObjEntryAndExit
     );
 
-    console.log("Tempo total de trabalho", convertTimeToString(returnObjTotalTimeWork));
+    console.log(objTotalTimeWork)
 
-    setDateTime({
-      returnObjEntryAndExitLunch,
-      returnObjExitLunchAndBackLunch,
-      returnObjEntryAndExit,
-    });
+    console.log("Tempo total de trabalho", convertTimeToString(objTotalTimeWork));
+
+    console.log('Obj', {
+      createdAt: new Date(),
+      entryOne,
+      exitOne,
+      entryTwo,
+      exitTwo,
+      objTotalTimeWork
+    })
+    // setDateTime({
+    //   returnObjEntryAndExitLunch,
+    //   returnObjExitLunchAndBackLunch,
+    //   returnObjEntryAndExit,
+    // });
   }
 
   return (
