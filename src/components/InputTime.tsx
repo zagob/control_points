@@ -8,6 +8,7 @@ export function InputTime({ ...rest }: InputProps) {
       borderColor="#15616d"
       fontSize="22px"
       type="time"
+      _hover={{ background: 'rgba(0, 0, 0, 0)' }}
       {...rest}
     />
   );

@@ -7,10 +7,16 @@ import { useAuth } from "../hooks/useAuth";
 export function Menu() {
   const { user, signOutAuthenticate, signInWithGoogle } = useAuth();
   return (
-    <Flex p="12px 32px" alignItems="center" gap="8px">
-      <Flex alignItems="center">
-        <Heading color="whiteAlpha.800">Control Points</Heading>
-        <IoMdClock fontSize="40px" color="green" />
+    <Flex
+      maxW="1180px"
+      margin="0 auto"
+      p="12px 32px"
+      alignItems="center"
+      gap="8px"
+    >
+      <Flex alignItems="flex-end">
+        <Heading color="whiteAlpha.800">Points Control</Heading>
+        <IoMdClock fontSize="50" color="#fff" />
       </Flex>
       <Flex alignItems="center" gap="8px" flex="1" justifyContent="flex-end">
         {!user ? (
@@ -33,9 +39,9 @@ export function Menu() {
               alignItems="center"
               gap="8px"
               background="none"
-              border="1px solid #fff"
+              border="1px solid rgba(255, 255, 255, 0.2)"
               color="whiteAlpha.700"
-              _hover={{ opacity: "0.6" }}
+              _hover={{ color: "#fff", border: "1px solid #fff" }}
               onClick={() => signOutAuthenticate()}
             >
               Sair

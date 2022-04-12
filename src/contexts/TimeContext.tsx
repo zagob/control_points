@@ -1,16 +1,23 @@
 import { createContext, ReactNode, useState } from "react";
 import { format, parseISO, differenceInMinutes } from "date-fns";
 
-interface valuesDatePros {
+export interface valuesDatePros {
   totalMinutes: number;
   totalHours: number;
   reminderMinutes: string;
 }
 
-interface dateTimeProps {
-  returnObjEntryAndExitLunch: valuesDatePros;
-  returnObjExitLunchAndBackLunch: valuesDatePros;
-  returnObjEntryAndExit: valuesDatePros;
+export interface dateTimeProps {
+  createdAt: number;
+  entryOne: string;
+  exitOne: string;
+  entryTwo: string;
+  exitTwo: string;
+  objTotalTimeWork: valuesDatePros | null;
+  timeMorning: string;
+  timeLunch: string;
+  timeAfternoon: string;
+  stringTotalTime: string;
 }
 
 interface TimeProviderProps {
@@ -78,6 +85,7 @@ export function TimeProvider({ children }: TimeProviderProps) {
     entryTwo: string,
     exitTwo: string
   ) {
+    const totalTimeMinutes = 480; // 8 horas
     const entryDate = parseISO(`${newDate} ${entryOne}`);
     const exitLunchDate = parseISO(`${newDate} ${exitOne}`);
     const backLunchDate = parseISO(`${newDate} ${entryTwo}`);
@@ -93,40 +101,33 @@ export function TimeProvider({ children }: TimeProviderProps) {
     );
     const returnObjEntryAndExit = convertDataTime(backLunchDate, exitDate);
 
-    console.log(
-      "Tempo de entrada e saida para almoco",
-      convertTimeToString(returnObjEntryAndExitLunch)
-    );
-    console.log(
-      "Tempo de almoco",
-      convertTimeToString(returnObjExitLunchAndBackLunch)
-    );
-    console.log(
-      "Tempo de volta do almoco e saida",
-      convertTimeToString(returnObjEntryAndExit)
-    );
+    const timeMorning = convertTimeToString(returnObjEntryAndExitLunch);
+    const timeLunch = convertTimeToString(returnObjExitLunchAndBackLunch);
+    const timeAfternoon = convertTimeToString(returnObjEntryAndExit);
+
     const objTotalTimeWork = convertTotalTimeWork(
       returnObjEntryAndExitLunch,
       returnObjEntryAndExit
     );
 
-    console.log(objTotalTimeWork)
+    const stringTotalTime = convertTimeToString(objTotalTimeWork);
 
-    console.log("Tempo total de trabalho", convertTimeToString(objTotalTimeWork));
+    const timeUp = objTotalTimeWork.totalMinutes > totalTimeMinutes;
+    const timeEqual = objTotalTimeWork.totalMinutes === totalTimeMinutes;
+    const timeDown = totalTimeMinutes < objTotalTimeWork.totalMinutes;
 
-    console.log('Obj', {
-      createdAt: new Date(),
+    setDateTime({
+      createdAt: new Date().getTime(),
       entryOne,
       exitOne,
       entryTwo,
       exitTwo,
-      objTotalTimeWork
-    })
-    // setDateTime({
-    //   returnObjEntryAndExitLunch,
-    //   returnObjExitLunchAndBackLunch,
-    //   returnObjEntryAndExit,
-    // });
+      objTotalTimeWork,
+      timeMorning,
+      timeLunch,
+      timeAfternoon,
+      stringTotalTime,
+    });
   }
 
   return (

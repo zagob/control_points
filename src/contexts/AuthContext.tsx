@@ -40,7 +40,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   console.log(user);
 
   async function handleAuthState() {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+   onAuthStateChanged(auth, async (user) => {
       if (user) {
         const { displayName, uid, photoURL } = user;
 
@@ -60,10 +60,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       }
     });
-
-    // return () => {
-    //   unsubscribe();
-    // };
   }
 
   useEffect(() => {

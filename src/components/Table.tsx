@@ -13,7 +13,34 @@ import { IoIosAdd } from "react-icons/io";
 import { RiSubtractFill } from "react-icons/ri";
 import { AiOutlineClockCircle } from "react-icons/ai";
 
-export function TableComponent() {
+import { format } from "date-fns";
+import pt from "date-fns/locale/pt";
+
+interface valuesDatePros {
+  totalMinutes: number;
+  totalHours: number;
+  reminderMinutes: string;
+}
+
+interface dateTimeProps {
+  createdAt: {
+    seconds: number;
+  };
+  entryOne: string;
+  exitOne: string;
+  entryTwo: string;
+  exitTwo: string;
+  objTotalTimeWork: valuesDatePros | null;
+  timeMorning: string;
+  timeLunch: string;
+  timeAfternoon: string;
+  stringTotalTime: string;
+}
+interface TableDataProps {
+  data: dateTimeProps[];
+}
+
+export function TableComponent({ data }: TableDataProps) {
   return (
     <Box borderRadius="12px" background="blackAlpha.300">
       <TableContainer color="#fff">
@@ -30,7 +57,29 @@ export function TableComponent() {
             </Tr>
           </Thead>
           <Tbody>
-            <Tr borderBottom="1px solid #fff" borderColor="whiteAlpha.400">
+            {data.map((item) => (
+              <Tr key={item.createdAt.seconds}>
+                <Td>
+                  {format(
+                    new Date(item.createdAt.seconds * 1000),
+                    `mm 'de' MMM`,
+                    {
+                      locale: pt,
+                    }
+                  )}
+                </Td>
+                <Td>{item.entryOne}</Td>
+                <Td>{item.exitOne}</Td>
+                <Td>{item.entryTwo}</Td>
+                <Td>{item.exitTwo}</Td>
+                <Td display="flex" alignItems="center" gap="8px">
+                  {" "}
+                  <AiOutlineClockCircle fontSize="18px" />{" "}
+                  {item.objTotalTimeWork.totalMinutes - 480}
+                </Td>
+              </Tr>
+            ))}
+            {/* <Tr borderBottom="1px solid #fff" borderColor="whiteAlpha.400">
               <Td>04 Abr 2022</Td>
               <Td>09:30</Td>
               <Td>12:30</Td>
@@ -69,7 +118,7 @@ export function TableComponent() {
                 <IoIosAdd color="green.400" fontSize="18px" />
                 00:00
               </Td>
-            </Tr>
+            </Tr> */}
           </Tbody>
         </Table>
       </TableContainer>
