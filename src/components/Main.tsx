@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Text, useDisclosure } from "@chakra-ui/react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { TimeContext } from "../contexts/TimeContext";
 import { useAuth } from "../hooks/useAuth";
 import { InputTime } from "./InputTime";
@@ -8,6 +8,7 @@ import { ModalSimulationTimePoints } from "./modals/ModalSimulationTimePoints";
 import { TableComponent } from "./Table";
 
 import { setDoc, doc, db, getDocs, collection } from "../services/Firebase";
+import { Pagination } from "./Pagination";
 
 export function Main() {
   const { user } = useAuth();
@@ -18,10 +19,20 @@ export function Main() {
   const [entryTwo, setEntryTwo] = useState("");
   const [exitTwo, setExitTwo] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
 
+  let PageSize = 5;
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * PageSize;
+    const lastPageIndex = firstPageIndex + PageSize;
+    return data?.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage]);
+
+  console.log("data", data);
+
   const timeAdded = data?.filter(
-    (item) => new Date(item?.createdAt?.seconds * 1000).getDate() === 11
+    (item) => new Date(item?.createdAt?.seconds * 1000).getDate() === 13
   );
 
   useEffect(() => {
@@ -43,27 +54,49 @@ export function Main() {
   }, [user?.id]);
 
   async function handleSendValues() {
-    handleCalculateHoursPoint(entryOne, exitOne, entryTwo, exitTwo);
+    const dataTime = handleCalculateHoursPoint(
+      entryOne,
+      exitOne,
+      entryTwo,
+      exitTwo
+    );
+
     try {
       await setDoc(
         doc(db, "users", user.id, "points", String(new Date().getTime())),
         {
-          createdAt: dateTime.createdAt,
-          entryOne: dateTime.entryOne,
-          exitOne: dateTime.exitOne,
-          entryTwo: dateTime.entryTwo,
-          exitTwo: dateTime.exitTwo,
+          createdAt: dataTime.createdAt,
+          entryOne: dataTime.entryOne,
+          exitOne: dataTime.exitOne,
+          entryTwo: dataTime.entryTwo,
+          exitTwo: dataTime.exitTwo,
           objTotalTimeWork: {
-            reminderMinutes: dateTime.objTotalTimeWork.reminderMinutes,
-            totalHours: dateTime.objTotalTimeWork.totalHours,
-            totalMinutes: dateTime.objTotalTimeWork.totalMinutes,
+            reminderMinutes: dataTime.objTotalTimeWork.reminderMinutes,
+            totalHours: dataTime.objTotalTimeWork.totalHours,
+            totalMinutes: dataTime.objTotalTimeWork.totalMinutes,
           },
-          stringTotalTime: dateTime.stringTotalTime,
-          timeMorning: dateTime.timeMorning,
-          timeLunch: dateTime.timeLunch,
-          timeAfternoon: dateTime.timeAfternoon,
+          stringTotalTime: dataTime.stringTotalTime,
+          timeMorning: dataTime.timeMorning,
+          timeLunch: dataTime.timeLunch,
+          timeAfternoon: dataTime.timeAfternoon,
+          timeBonus: {
+            valueHoursReminder: dataTime.timeBonus.valueHoursReminder,
+            valueMinutesReminder: dataTime.timeBonus.valueMinutesReminder,
+            definedStatus: dataTime.timeBonus.definedStatus,
+          },
         }
       );
+
+      setData((old) => [
+        ...old,
+        {
+          ...dataTime,
+          createdAt: {
+            seconds: dataTime.createdAt.getTime() / 1000,
+            nanoseconds: 0,
+          },
+        },
+      ]);
     } finally {
       console.log("acabou");
     }
@@ -133,11 +166,24 @@ export function Main() {
           Adicionar
         </Button>
       </Flex>
-
-      <TableComponent data={data} />
-      <Flex padding="12px 0">
-        <Button onClick={() => handleSimulationTimePoints()}>Simular</Button>
+      <Flex mb="18px">
+        <Button
+          _hover={{ opacity: "0.8" }}
+          background="yellowgreen"
+          textTransform="uppercase"
+          onClick={() => handleSimulationTimePoints()}
+        >
+          Simular
+        </Button>
       </Flex>
+
+      <TableComponent data={currentTableData} />
+      <Pagination
+        currentPage={currentPage}
+        totalCount={data.length}
+        pageSize={PageSize}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
     </Box>
   );
 }

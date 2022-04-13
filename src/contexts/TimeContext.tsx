@@ -8,7 +8,7 @@ export interface valuesDatePros {
 }
 
 export interface dateTimeProps {
-  createdAt: number;
+  createdAt: Date;
   entryOne: string;
   exitOne: string;
   entryTwo: string;
@@ -18,6 +18,11 @@ export interface dateTimeProps {
   timeLunch: string;
   timeAfternoon: string;
   stringTotalTime: string;
+  timeBonus: {
+    valueHoursReminder: string;
+    valueMinutesReminder: string;
+    definedStatus: string;
+  };
 }
 
 interface TimeProviderProps {
@@ -31,7 +36,7 @@ interface TimeContextProps {
     exitLunch: string,
     backLunch: string,
     exit: string
-  ) => void;
+  ) => dateTimeProps;
   dateTime: dateTimeProps | undefined;
 }
 
@@ -84,7 +89,7 @@ export function TimeProvider({ children }: TimeProviderProps) {
     exitOne: string,
     entryTwo: string,
     exitTwo: string
-  ) {
+  ): dateTimeProps {
     const totalTimeMinutes = 480; // 8 horas
     const entryDate = parseISO(`${newDate} ${entryOne}`);
     const exitLunchDate = parseISO(`${newDate} ${exitOne}`);
@@ -112,12 +117,31 @@ export function TimeProvider({ children }: TimeProviderProps) {
 
     const stringTotalTime = convertTimeToString(objTotalTimeWork);
 
-    const timeUp = objTotalTimeWork.totalMinutes > totalTimeMinutes;
-    const timeEqual = objTotalTimeWork.totalMinutes === totalTimeMinutes;
-    const timeDown = totalTimeMinutes < objTotalTimeWork.totalMinutes;
+    const subtractTotalMinutes =
+      objTotalTimeWork.totalMinutes - totalTimeMinutes;
 
-    setDateTime({
-      createdAt: new Date().getTime(),
+    const convertToPositive = Math.abs(subtractTotalMinutes);
+    const valueHoursReminder = String(
+      Math.floor(convertToPositive / 60)
+    ).padStart(2, "0");
+    const valueMinutesReminder = String(convertToPositive % 60).padStart(
+      2,
+      "0"
+    );
+
+    const definedStatus = Math.sign(subtractTotalMinutes); // 1, 0, - 1
+
+    const timeBonus = {
+      valueHoursReminder,
+      valueMinutesReminder,
+      definedStatus:
+        (definedStatus === 1 && "up") ||
+        (definedStatus === 0 && "equal") ||
+        (definedStatus === -1 && "down"),
+    };
+
+    const returnObj = {
+      createdAt: new Date(),
       entryOne,
       exitOne,
       entryTwo,
@@ -127,7 +151,11 @@ export function TimeProvider({ children }: TimeProviderProps) {
       timeLunch,
       timeAfternoon,
       stringTotalTime,
-    });
+      timeBonus,
+    };
+
+    setDateTime(returnObj);
+    return returnObj;
   }
 
   return (
