@@ -1,5 +1,13 @@
 import { useContext, useState } from "react";
-import { Box, Button, Flex, Heading, Text, useDisclosure, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Text,
+  useDisclosure,
+  VStack,
+} from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { IoMdClock } from "react-icons/io";
 import { InputTime } from "../components/InputTime";
@@ -48,11 +56,15 @@ const Home: NextPage = () => {
 
   return (
     <>
-    <ModalComponent isOpen={isOpen} onClose={onClose} />
-    <Button onClick={() =>onOpen()}>open</Button>
-      {/* <Login /> */}
-      <Menu />
-      <Main />
+      <ModalComponent isOpen={isOpen} onClose={onClose} />
+      {user ? (
+        <>
+          <Menu />
+          <Main />
+        </>
+      ) : (
+        <Login />
+      )}
     </>
   );
 };

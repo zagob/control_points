@@ -27,7 +27,7 @@ export function Main() {
     const firstPageIndex = (currentPage - 1) * PageSize;
     const lastPageIndex = firstPageIndex + PageSize;
     return data?.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage]);
+  }, [currentPage, data]);
 
   console.log("data", data);
 
@@ -177,7 +177,7 @@ export function Main() {
         </Button>
       </Flex>
 
-      <TableComponent data={currentTableData} />
+      {data.length > 0 && <TableComponent data={currentTableData} />}
       <Pagination
         currentPage={currentPage}
         totalCount={data.length}
