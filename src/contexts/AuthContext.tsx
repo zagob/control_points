@@ -1,3 +1,4 @@
+import { useBoolean } from "@chakra-ui/react";
 import { Unsubscribe } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -28,6 +29,7 @@ interface User {
 
 interface AuthContextProps {
   user: User | undefined;
+  loadingAuth: boolean;
   signInWithGoogle: () => Promise<void>;
   signOutAuthenticate: () => Promise<void>;
   handleAuthState: () => Promise<void>;
@@ -36,11 +38,12 @@ interface AuthContextProps {
 export const AuthContext = createContext({} as AuthContextProps);
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const [loadingAuth, setLoadingAuth] = useBoolean(true);
   const [user, setUser] = useState<User>();
   console.log(user);
 
   async function handleAuthState() {
-   onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         const { displayName, uid, photoURL } = user;
 
@@ -73,6 +76,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           avatar: photoURL,
         });
       }
+      setLoadingAuth.off();
     });
 
     return () => {
@@ -102,7 +106,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
   return (
     <AuthContext.Provider
-      value={{ user, signInWithGoogle, signOutAuthenticate, handleAuthState }}
+      value={{
+        user,
+        signInWithGoogle,
+        signOutAuthenticate,
+        handleAuthState,
+        loadingAuth,
+      }}
     >
       {children}
     </AuthContext.Provider>

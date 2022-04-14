@@ -1,0 +1,26 @@
+[
+  {
+    "stringTotalTime": "7 hora(s) e 27 minutos",
+    "createdAt": {
+      "seconds": 1649886131,
+      "nanoseconds": 288000000
+    },
+    "exitTwo": "18:45",
+    "timeLunch": "1 hora(s) e 50 minutos",
+    "exitOne": "12:37",
+    "objTotalTimeWork": {
+      "reminderMinutes": "27",
+      "totalMinutes": 447,
+      "totalHours": 7
+    },
+    "entryTwo": "14:27",
+    "timeMorning": "3 hora(s) e 09 minutos",
+    "entryOne": "09:28",
+    "timeAfternoon": "4 hora(s) e 18 minutos",
+    "timeBonus": {
+      "valueHoursReminder": "00",
+      "definedStatus": "down",
+      "valueMinutesReminder": "33"
+    }
+  }
+]

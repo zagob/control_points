@@ -4,6 +4,7 @@ import {
   Button,
   Flex,
   Heading,
+  Spinner,
   Text,
   useDisclosure,
   VStack,
@@ -34,11 +35,10 @@ import { ModalComponent } from "../components/ModalContent";
 
 const Home: NextPage = () => {
   const { onOpen, isOpen, onClose } = useDisclosure();
-  const { user, signInWithGoogle, signOutAuthenticate, handleAuthState } =
-    useAuth();
+  const { user, loadingAuth } = useAuth();
   const { newDate, handleCalculateHoursPoint, dateTime } =
     useContext(TimeContext);
-
+  console.log("loadingAuth", loadingAuth);
   async function handleGetUser() {
     // setDoc(doc(db, "users", '123', 'points', String(new Date().getTime())), {
     //   entry: '3'
@@ -57,13 +57,23 @@ const Home: NextPage = () => {
   return (
     <>
       <ModalComponent isOpen={isOpen} onClose={onClose} />
-      {user ? (
+      {loadingAuth && !user && (
+        <Flex justifyContent="center" alignItems="center" height="100vh">
+          <Spinner size="xl" color="gray" />
+        </Flex>
+      )}
+
+      {!loadingAuth && user && (
         <>
           <Menu />
           <Main />
         </>
-      ) : (
-        <Login />
+      )}
+
+      {!loadingAuth && !user && (
+        <>
+          <Login />
+        </>
       )}
     </>
   );

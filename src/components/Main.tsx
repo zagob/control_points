@@ -1,4 +1,12 @@
-import { Box, Button, Flex, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Spinner,
+  Text,
+  useBoolean,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { TimeContext } from "../contexts/TimeContext";
 import { useAuth } from "../hooks/useAuth";
@@ -13,12 +21,13 @@ import { Pagination } from "./Pagination";
 export function Main() {
   const { user } = useAuth();
   const { onOpen, isOpen, onClose } = useDisclosure();
+  const [loading, setLoading] = useBoolean();
   const { handleCalculateHoursPoint, dateTime } = useContext(TimeContext);
   const [entryOne, setEntryOne] = useState("");
   const [exitOne, setExitOne] = useState("");
   const [entryTwo, setEntryTwo] = useState("");
   const [exitTwo, setExitTwo] = useState("");
-
+  console.log(loading);
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
 
@@ -37,15 +46,19 @@ export function Main() {
 
   useEffect(() => {
     async function getData() {
-      const queryUser = doc(db, "users", user.id);
-      const queryDocs = await getDocs(collection(queryUser, "points"));
-      const dataMap = queryDocs.docs.map((item) => {
-        return {
-          ...item.data(),
-        };
-      });
-
-      setData(dataMap);
+      try {
+        setLoading.on();
+        const queryUser = doc(db, "users", user.id);
+        const queryDocs = await getDocs(collection(queryUser, "test_points"));
+        const dataMap = queryDocs.docs.map((item) => {
+          return {
+            ...item.data(),
+          };
+        });
+        setData(dataMap);
+      } finally {
+        setLoading.off();
+      }
     }
 
     if (user) {
@@ -63,7 +76,7 @@ export function Main() {
 
     try {
       await setDoc(
-        doc(db, "users", user.id, "points", String(new Date().getTime())),
+        doc(db, "users", user.id, "test_points", String(new Date().getTime())),
         {
           createdAt: dataTime.createdAt,
           entryOne: dataTime.entryOne,
@@ -177,7 +190,18 @@ export function Main() {
         </Button>
       </Flex>
 
-      {data.length > 0 && <TableComponent data={currentTableData} />}
+      {loading && (
+        <Flex justifyContent="center">
+          <Spinner color="gray" size="xl" />
+        </Flex>
+      )}
+
+      {!loading && data.length > 0 && (
+        <TableComponent data={currentTableData} />
+      )}
+
+      {!loading && data.length === 0 && <span>Nenhum dado encontrado</span>}
+
       <Pagination
         currentPage={currentPage}
         totalCount={data.length}
