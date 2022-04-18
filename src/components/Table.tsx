@@ -1,25 +1,19 @@
 import {
   Box,
-  Flex,
   Table,
   TableContainer,
   Tbody,
   Td,
-  Text,
   Th,
   Thead,
   Tr,
 } from "@chakra-ui/react";
 
-import { IoIosAdd } from "react-icons/io";
-import { RiSubtractFill } from "react-icons/ri";
 import { AiOutlineClockCircle } from "react-icons/ai";
+import { FaEdit } from "react-icons/fa";
 
 import { format } from "date-fns";
 import pt from "date-fns/locale/pt";
-import { Pagination } from "./Pagination";
-import { PaginationHook } from "./PaginationHook";
-import { useState } from "react";
 
 interface valuesDatePros {
   totalMinutes: number;
@@ -46,11 +40,30 @@ interface dateTimeProps {
     definedStatus: string;
   };
 }
+
+export interface dateTimeFormatProps {
+  createdAt: string;
+  entryOne: string;
+  exitOne: string;
+  entryTwo: string;
+  exitTwo: string;
+  objTotalTimeWork: valuesDatePros | null;
+  timeMorning: string;
+  timeLunch: string;
+  timeAfternoon: string;
+  stringTotalTime: string;
+  timeBonus: {
+    valueHoursReminder: string;
+    valueMinutesReminder: string;
+    definedStatus: string;
+  };
+}
 interface TableDataProps {
   data: dateTimeProps[];
+  handleShowInfoTime: (item: dateTimeFormatProps) => void;
 }
 
-export function TableComponent({ data }: TableDataProps) {
+export function TableComponent({ data, handleShowInfoTime }: TableDataProps) {
   const dataFormat = data.map((item) => {
     return {
       ...item,
@@ -66,6 +79,7 @@ export function TableComponent({ data }: TableDataProps) {
       }),
     };
   });
+  console.log(formatDateFnsDate);
 
   return (
     <>
@@ -80,6 +94,7 @@ export function TableComponent({ data }: TableDataProps) {
                 <Th fontSize="1xl">Entrada 2</Th>
                 <Th fontSize="1xl">Saida 2</Th>
                 <Th fontSize="1xl">Bonus</Th>
+                <Th fontSize="1xl"></Th>
                 <Th></Th>
               </Tr>
             </Thead>
@@ -106,55 +121,19 @@ export function TableComponent({ data }: TableDataProps) {
                     )}
                     {`${item.timeBonus.valueHoursReminder}:${item.timeBonus.valueMinutesReminder}`}
                   </Td>
+                  <Td>
+                    <FaEdit
+                      cursor="pointer"
+                      onClick={() => handleShowInfoTime(item)}
+                      color="yellow"
+                    />
+                  </Td>
                 </Tr>
               ))}
-              {/* <Tr borderBottom="1px solid #fff" borderColor="whiteAlpha.400">
-              <Td>04 Abr 2022</Td>
-              <Td>09:30</Td>
-              <Td>12:30</Td>
-              <Td>14:00</Td>
-              <Td>19:00</Td>
-              <Td display="flex" alignItems="center" gap="8px">
-                {" "}
-                <AiOutlineClockCircle fontSize="18px" /> 00:00
-              </Td>
-            </Tr>
-            <Tr
-              color="red.400"
-              borderBottom="1px solid #fff"
-              borderColor="whiteAlpha.400"
-            >
-              <Td>05 Abr 2022</Td>
-              <Td>09:30</Td>
-              <Td>12:30</Td>
-              <Td>14:00</Td>
-              <Td>19:00</Td>
-              <Td display="flex" alignItems="center" gap="8px">
-                <RiSubtractFill color="red.400" fontSize="18px" /> 00:00
-              </Td>
-            </Tr>
-            <Tr
-              color="green.400"
-              borderBottom="1px solid #fff"
-              borderColor="whiteAlpha.400"
-            >
-              <Td>06 Abr 2022</Td>
-              <Td>09:30</Td>
-              <Td>12:30</Td>
-              <Td>14:00</Td>
-              <Td>19:00</Td>
-              <Td display="flex" alignItems="center" gap="8px">
-                <IoIosAdd color="green.400" fontSize="18px" />
-                00:00
-              </Td>
-            </Tr> */}
             </Tbody>
           </Table>
         </TableContainer>
       </Box>
-      <Flex>
-        
-      </Flex>
     </>
   );
 }

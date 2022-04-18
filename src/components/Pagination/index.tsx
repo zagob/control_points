@@ -1,9 +1,8 @@
 import React from "react";
-import classnames from "classnames";
 import { usePagination, DOTS } from "../../hooks/usePagination";
-import { Button, Flex } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
-// import "./pagination.scss";
+import { ButtonPagination } from "./ButtonPagination";
 
 interface PaginationProps {
   onPageChange: (page: number) => void;
@@ -42,62 +41,32 @@ export const Pagination = ({
   let lastPage = paginationRange[paginationRange.length - 1];
   return (
     <>
-      <Flex color="#fff">
-        <Button onClick={onPrevious} disabled={currentPage === 1}>
+      <Flex color="#fff" gap="8px" justifyContent="flex-end">
+        <ButtonPagination onClick={onPrevious} disabled={currentPage === 1}>
           <AiOutlineArrowLeft color="#000" />
-        </Button>
+        </ButtonPagination>
         {paginationRange.map((pageNumber) => {
           if (pageNumber === DOTS) {
             return <li className="pagination-item dots">&#8230;</li>;
           }
 
           return (
-            <Button color="#000" onClick={() => onPageChange(pageNumber)}>
+            <ButtonPagination
+              color="#000"
+              onClick={() => onPageChange(pageNumber)}
+              background={
+                currentPage === pageNumber ? "yellow.400" : "whiteAlpha.900"
+              }
+            >
               {" "}
               {pageNumber}
-            </Button>
+            </ButtonPagination>
           );
         })}
-        <Button  onClick={onNext} disabled={currentPage === lastPage}>
+        <ButtonPagination onClick={onNext} disabled={currentPage === lastPage}>
           <AiOutlineArrowRight color="#000" />
-        </Button>
+        </ButtonPagination>
       </Flex>
-      <ul
-      // className={classnames("pagination-container", { [className]: className })}
-      >
-        <li
-          className={classnames("pagination-item", {
-            disabled: currentPage === 1,
-          })}
-          onClick={onPrevious}
-        >
-          <div className="arrow left" />
-        </li>
-        {paginationRange.map((pageNumber) => {
-          if (pageNumber === DOTS) {
-            return <li className="pagination-item dots">&#8230;</li>;
-          }
-
-          return (
-            <li
-              className={classnames("pagination-item", {
-                selected: pageNumber === currentPage,
-              })}
-              onClick={() => onPageChange(pageNumber)}
-            >
-              {pageNumber}
-            </li>
-          );
-        })}
-        <li
-          className={classnames("pagination-item", {
-            disabled: currentPage === lastPage,
-          })}
-          onClick={onNext}
-        >
-          <div className="arrow right" />
-        </li>
-      </ul>
     </>
   );
 };

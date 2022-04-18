@@ -13,7 +13,7 @@ import { useAuth } from "../hooks/useAuth";
 import { InputTime } from "./InputTime";
 
 import { ModalSimulationTimePoints } from "./modals/ModalSimulationTimePoints";
-import { TableComponent } from "./Table";
+import { dateTimeFormatProps, TableComponent } from "./Table";
 
 import { setDoc, doc, db, getDocs, collection } from "../services/Firebase";
 import { Pagination } from "./Pagination";
@@ -21,6 +21,15 @@ import { Pagination } from "./Pagination";
 export function Main() {
   const { user } = useAuth();
   const { onOpen, isOpen, onClose } = useDisclosure();
+
+  const OverlayOne = () => (
+    <ModalSimulationTimePoints
+      data={dateTime}
+      isOpen={isOpen}
+      onClose={onClose}
+    />
+  );
+  const [overlay, setOverlay] = useState();
   const [loading, setLoading] = useBoolean();
   const { handleCalculateHoursPoint, dateTime } = useContext(TimeContext);
   const [entryOne, setEntryOne] = useState("");
@@ -120,6 +129,16 @@ export function Main() {
     onOpen();
   }
 
+  function handleShowInfoTime(item: dateTimeFormatProps) {
+    handleCalculateHoursPoint(
+      item.entryOne,
+      item.exitOne,
+      item.entryTwo,
+      item.exitTwo
+    );
+    onOpen();
+  }
+
   return (
     <Box maxWidth="max-content" margin="0 auto">
       <ModalSimulationTimePoints
@@ -197,7 +216,10 @@ export function Main() {
       )}
 
       {!loading && data.length > 0 && (
-        <TableComponent data={currentTableData} />
+        <TableComponent
+          data={currentTableData}
+          handleShowInfoTime={handleShowInfoTime}
+        />
       )}
 
       {!loading && data.length === 0 && <span>Nenhum dado encontrado</span>}
