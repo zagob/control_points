@@ -71,6 +71,8 @@ export function TableComponent({ data, handleShowInfoTime }: TableDataProps) {
     };
   });
 
+  console.log('format', dataFormat)
+
   const formatDateFnsDate = dataFormat.map((item) => {
     return {
       ...item,
@@ -79,7 +81,7 @@ export function TableComponent({ data, handleShowInfoTime }: TableDataProps) {
       }),
     };
   });
-  console.log(formatDateFnsDate);
+  console.log('DATA', data);
 
   return (
     <>

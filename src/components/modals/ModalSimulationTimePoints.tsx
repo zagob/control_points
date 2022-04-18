@@ -2,26 +2,15 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useDisclosure,
-  Button,
   Text,
-  FormControl,
-  HStack,
   VStack,
-  FormLabel,
-  Flex,
   Grid,
   Heading,
-  Divider,
 } from "@chakra-ui/react";
 import { dateTimeProps } from "../../contexts/TimeContext";
-import { format } from "date-fns";
 
-import pt from "date-fns/locale/pt";
 import {
   AiFillCheckCircle,
   AiFillCloseCircle,
@@ -45,17 +34,13 @@ export function ModalSimulationTimePoints({
   const upTime = data?.objTotalTimeWork.totalMinutes > totalTimeMinutes;
   const equalTime = data?.objTotalTimeWork.totalMinutes === totalTimeMinutes;
   const downTime = data?.objTotalTimeWork.totalMinutes < totalTimeMinutes;
+
   return (
     <>
       <Modal isCentered isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent background="#c3c3c3">
-          <ModalHeader>
-            {date &&
-              format(date, `'Dia' dd 'de' MMMM`, {
-                locale: pt,
-              })}
-          </ModalHeader>
+          {/* <ModalHeader>{data?.createdAt}</ModalHeader> */}
           <ModalCloseButton />
           <ModalBody>
             <Grid gridTemplateColumns="1fr 1fr">

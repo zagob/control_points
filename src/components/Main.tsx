@@ -8,7 +8,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useMemo, useState } from "react";
-import { TimeContext } from "../contexts/TimeContext";
+import { dateTimeProps, TimeContext } from "../contexts/TimeContext";
 import { useAuth } from "../hooks/useAuth";
 import { InputTime } from "./InputTime";
 
@@ -17,6 +17,9 @@ import { dateTimeFormatProps, TableComponent } from "./Table";
 
 import { setDoc, doc, db, getDocs, collection } from "../services/Firebase";
 import { Pagination } from "./Pagination";
+
+import { format } from "date-fns";
+import pt from "date-fns/locale/pt";
 
 export function Main() {
   const { user } = useAuth();
@@ -36,7 +39,7 @@ export function Main() {
   const [exitOne, setExitOne] = useState("");
   const [entryTwo, setEntryTwo] = useState("");
   const [exitTwo, setExitTwo] = useState("");
-  console.log(loading);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
 
@@ -47,11 +50,34 @@ export function Main() {
     return data?.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, data]);
 
-  console.log("data", data);
+  // console.log(
+  //   "reduc",
+  //   data.reduce((acc, element) => {
+  //     return (acc += element.objTotalTimeWork.totalMinutes);
+  //   }, 0)
+  // );
+  const totalMinutes = data.reduce((acc, value) => {
+    return acc + value.objTotalTimeWork.totalMinutes;
+  }, 0);
 
-  const timeAdded = data?.filter(
-    (item) => new Date(item?.createdAt?.seconds * 1000).getDate() === 13
+  const subtractTotalMinutesVsTotalMinutesDefault =
+    totalMinutes - 480 * data.length;
+
+  const isTimeNegativeOrPositive = Math.sign(
+    subtractTotalMinutesVsTotalMinutesDefault
   );
+  const convertNumber = Math.abs(subtractTotalMinutesVsTotalMinutesDefault);
+
+  const timeHor = Math.floor(convertNumber / 60);
+  const timeMinutes = convertNumber % 60;
+
+  console.log("F", `${timeHor}:${timeMinutes}`);
+
+  // const timeAdded = data?.filter(
+  //   (item) => new Date(item?.createdAt?.seconds * 1000).getDate() === 13
+  // );
+
+  let timeAdded = [];
 
   useEffect(() => {
     async function getData() {
@@ -64,6 +90,7 @@ export function Main() {
             ...item.data(),
           };
         });
+
         setData(dataMap);
       } finally {
         setLoading.off();
@@ -87,6 +114,7 @@ export function Main() {
       await setDoc(
         doc(db, "users", user.id, "test_points", String(new Date().getTime())),
         {
+          // id: dateTime.id,
           createdAt: dataTime.createdAt,
           entryOne: dataTime.entryOne,
           exitOne: dataTime.exitOne,
@@ -113,10 +141,8 @@ export function Main() {
         ...old,
         {
           ...dataTime,
-          createdAt: {
-            seconds: dataTime.createdAt.getTime() / 1000,
-            nanoseconds: 0,
-          },
+          seconds: dataTime.createdAt.getTime() / 1000,
+          nanoseconds: 0,
         },
       ]);
     } finally {

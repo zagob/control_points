@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useState } from "react";
 import { format, parseISO, differenceInMinutes } from "date-fns";
+import { v4 as uuidv4 } from "uuid";
 
 export interface valuesDatePros {
   totalMinutes: number;
@@ -8,6 +9,7 @@ export interface valuesDatePros {
 }
 
 export interface dateTimeProps {
+  id: string;
   createdAt: Date;
   entryOne: string;
   exitOne: string;
@@ -89,7 +91,7 @@ export function TimeProvider({ children }: TimeProviderProps) {
     exitOne: string,
     entryTwo: string,
     exitTwo: string
-  ): dateTimeProps {
+  ) {
     const totalTimeMinutes = 480; // 8 horas
     const entryDate = parseISO(`${newDate} ${entryOne}`);
     const exitLunchDate = parseISO(`${newDate} ${exitOne}`);
@@ -100,10 +102,12 @@ export function TimeProvider({ children }: TimeProviderProps) {
       entryDate,
       exitLunchDate
     );
+
     const returnObjExitLunchAndBackLunch = convertDataTime(
       exitLunchDate,
       backLunchDate
     );
+
     const returnObjEntryAndExit = convertDataTime(backLunchDate, exitDate);
 
     const timeMorning = convertTimeToString(returnObjEntryAndExitLunch);
@@ -140,8 +144,11 @@ export function TimeProvider({ children }: TimeProviderProps) {
         (definedStatus === -1 && "down"),
     };
 
+    const dateNow = new Date();
+
     const returnObj = {
-      createdAt: new Date(),
+      id: uuidv4(),
+      createdAt: dateNow,
       entryOne,
       exitOne,
       entryTwo,
