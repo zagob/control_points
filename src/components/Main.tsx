@@ -50,12 +50,6 @@ export function Main() {
     return data?.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, data]);
 
-  // console.log(
-  //   "reduc",
-  //   data.reduce((acc, element) => {
-  //     return (acc += element.objTotalTimeWork.totalMinutes);
-  //   }, 0)
-  // );
   const totalMinutes = data.reduce((acc, value) => {
     return acc + value.objTotalTimeWork.totalMinutes;
   }, 0);
@@ -68,16 +62,13 @@ export function Main() {
   );
   const convertNumber = Math.abs(subtractTotalMinutesVsTotalMinutesDefault);
 
-  const timeHor = Math.floor(convertNumber / 60);
-  const timeMinutes = convertNumber % 60;
+  const timeHor = String(Math.floor(convertNumber / 60)).padStart(2, "0");
+  const timeMinutes = String(convertNumber % 60).padStart(2, "0");
 
-  console.log("F", `${timeHor}:${timeMinutes}`);
-
-  // const timeAdded = data?.filter(
-  //   (item) => new Date(item?.createdAt?.seconds * 1000).getDate() === 13
-  // );
-
-  let timeAdded = [];
+  const timeAdded = data?.filter(
+    (item) =>
+      new Date(item?.createdAt * 1000).getDate() === new Date().getDate()
+  );
 
   useEffect(() => {
     async function getData() {
@@ -103,19 +94,23 @@ export function Main() {
   }, [user?.id]);
 
   async function handleSendValues() {
-    const dataTime = handleCalculateHoursPoint(
-      entryOne,
-      exitOne,
-      entryTwo,
-      exitTwo
-    );
-
     try {
+      const dataTime = handleCalculateHoursPoint(
+        entryOne,
+        exitOne,
+        entryTwo,
+        exitTwo
+      );
+
+      setEntryOne("");
+      setExitOne("");
+      setEntryTwo("");
+      setExitTwo("");
       await setDoc(
         doc(db, "users", user.id, "test_points", String(new Date().getTime())),
         {
-          // id: dateTime.id,
-          createdAt: dataTime.createdAt,
+          idPoints: dateTime.idPoints,
+          createdAt: dateTime.createdAt,
           entryOne: dataTime.entryOne,
           exitOne: dataTime.exitOne,
           entryTwo: dataTime.entryTwo,
@@ -141,12 +136,9 @@ export function Main() {
         ...old,
         {
           ...dataTime,
-          seconds: dataTime.createdAt.getTime() / 1000,
-          nanoseconds: 0,
         },
       ]);
     } finally {
-      console.log("acabou");
     }
   }
 
@@ -204,27 +196,28 @@ export function Main() {
           value={exitTwo}
           onChange={(e) => setExitTwo(e.target.value)}
         />
-
-        <Button
-          width="full"
-          background="#ffd373"
-          onClick={handleSendValues}
-          disabled={
-            entryOne.length === 0 ||
-            entryTwo.length === 0 ||
-            exitOne.length === 0 ||
-            exitTwo.length === 0
-          }
-          _hover={{
-            _disabled: {},
-            _active: { background: "#ffd373" },
-            opacity: "0.4",
-          }}
-        >
-          Adicionar
-        </Button>
+        {timeAdded.length === 0 && (
+          <Button
+            width="full"
+            background="#ffd373"
+            onClick={handleSendValues}
+            disabled={
+              entryOne.length === 0 ||
+              entryTwo.length === 0 ||
+              exitOne.length === 0 ||
+              exitTwo.length === 0
+            }
+            _hover={{
+              _disabled: {},
+              _active: { background: "#ffd373" },
+              opacity: "0.4",
+            }}
+          >
+            Adicionar
+          </Button>
+        )}
       </Flex>
-      <Flex mb="18px">
+      <Flex mb="18px" alignItems="center" justifyContent="space-between">
         <Button
           _hover={{ opacity: "0.8" }}
           background="yellowgreen"
@@ -233,6 +226,8 @@ export function Main() {
         >
           Simular
         </Button>
+
+        <Text color={isTimeNegativeOrPositive ? 'green' : 'red'}>{`${timeHor}:${timeMinutes}`}</Text>
       </Flex>
 
       {loading && (

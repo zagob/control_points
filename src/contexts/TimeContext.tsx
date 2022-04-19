@@ -9,8 +9,8 @@ export interface valuesDatePros {
 }
 
 export interface dateTimeProps {
-  id: string;
-  createdAt: Date;
+  idPoints: string;
+  createdAt: number;
   entryOne: string;
   exitOne: string;
   entryTwo: string;
@@ -144,11 +144,11 @@ export function TimeProvider({ children }: TimeProviderProps) {
         (definedStatus === -1 && "down"),
     };
 
-    const dateNow = new Date();
+    const dateNowSeconds = Math.floor(new Date().getTime() / 1000);
 
     const returnObj = {
-      id: uuidv4(),
-      createdAt: dateNow,
+      idPoints: uuidv4(),
+      createdAt: dateNowSeconds,
       entryOne,
       exitOne,
       entryTwo,

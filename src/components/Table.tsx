@@ -22,9 +22,8 @@ interface valuesDatePros {
 }
 
 interface dateTimeProps {
-  createdAt: {
-    seconds: number;
-  };
+  idPoints: string;
+  createdAt: number;
   entryOne: string;
   exitOne: string;
   entryTwo: string;
@@ -67,21 +66,18 @@ export function TableComponent({ data, handleShowInfoTime }: TableDataProps) {
   const dataFormat = data.map((item) => {
     return {
       ...item,
-      createdAt: new Date(item.createdAt.seconds * 1000),
+      createdAt: new Date(item.createdAt * 1000),
     };
   });
 
-  console.log('format', dataFormat)
-
-  const formatDateFnsDate = dataFormat.map((item) => {
+  const formatDateFnsDate = dataFormat?.map((item) => {
     return {
       ...item,
-      createdAt: format(item.createdAt, `dd 'de' MMM`, {
+      createdAt: format(item?.createdAt, `dd 'de' MMM`, {
         locale: pt,
       }),
     };
   });
-  console.log('DATA', data);
 
   return (
     <>
@@ -103,7 +99,7 @@ export function TableComponent({ data, handleShowInfoTime }: TableDataProps) {
             <Tbody>
               {formatDateFnsDate.map((item, idx) => (
                 <Tr
-                  key={idx}
+                  key={item.idPoints}
                   color={
                     (item.timeBonus.definedStatus === "up" && "green.400") ||
                     (item.timeBonus.definedStatus === "down" && "red.400")
