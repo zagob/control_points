@@ -1,19 +1,25 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import "react-day-picker/dist/style.css";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, DayPickerProps } from "react-day-picker";
 import { format } from "date-fns";
 import ptBr from "date-fns/locale/pt";
 
-export function CalendarDatePicker() {
-  const [selected, setSelected] = useState(new Date());
+interface CalendarDayPicker {
+  onSelectedDate: Dispatch<SetStateAction<Date>>;
+  selectedDate: Date;
+}
 
-  console.log("selected", selected);
+export function CalendarDatePicker({
+  onSelectedDate,
+  selectedDate,
+}: CalendarDayPicker) {
+  console.log("selected", selectedDate);
   let footer = <p>Pick a day</p>;
-  if (selected) {
+  if (selectedDate) {
     footer = (
       <p>
         Picked{" "}
-        {format(selected, "PP", {
+        {format(selectedDate, "PP", {
           locale: ptBr,
         })}
       </p>
@@ -40,8 +46,6 @@ export function CalendarDatePicker() {
   ];
   return (
     <DayPicker
-    
-      defaultMonth={new Date(2022, 5, 10)}
       mode="single"
       locale={ptBr}
       disabled={[
@@ -52,8 +56,8 @@ export function CalendarDatePicker() {
       modifiers={{
         available: { dayOfWeek: [1, 2, 3, 4, 5] },
       }}
-      selected={selected}
-      onSelect={setSelected}
+      selected={selectedDate}
+      onSelect={onSelectedDate}
       modifiersStyles={{
         selected: {
           background: "#fff",
@@ -68,8 +72,6 @@ export function CalendarDatePicker() {
         },
       }}
       style={{
-        
-        
         color: "#fff",
       }}
     />

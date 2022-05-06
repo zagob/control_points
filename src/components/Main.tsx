@@ -44,6 +44,8 @@ export function Main() {
   const [exitOne, setExitOne] = useState("");
   const [entryTwo, setEntryTwo] = useState("");
   const [exitTwo, setExitTwo] = useState("");
+  const [selected, setSelected] = useState<Date>(new Date());
+  console.log('selected',selected)
 
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
@@ -106,36 +108,36 @@ export function Main() {
         entryTwo,
         exitTwo
       );
-
+        console.log(dateTime)
       setEntryOne("");
       setExitOne("");
       setEntryTwo("");
       setExitTwo("");
-      await setDoc(
-        doc(db, "users", user.id, "test_points", String(new Date().getTime())),
-        {
-          idPoints: dateTime.idPoints,
-          createdAt: dateTime.createdAt,
-          entryOne: dataTime.entryOne,
-          exitOne: dataTime.exitOne,
-          entryTwo: dataTime.entryTwo,
-          exitTwo: dataTime.exitTwo,
-          objTotalTimeWork: {
-            reminderMinutes: dataTime.objTotalTimeWork.reminderMinutes,
-            totalHours: dataTime.objTotalTimeWork.totalHours,
-            totalMinutes: dataTime.objTotalTimeWork.totalMinutes,
-          },
-          stringTotalTime: dataTime.stringTotalTime,
-          timeMorning: dataTime.timeMorning,
-          timeLunch: dataTime.timeLunch,
-          timeAfternoon: dataTime.timeAfternoon,
-          timeBonus: {
-            valueHoursReminder: dataTime.timeBonus.valueHoursReminder,
-            valueMinutesReminder: dataTime.timeBonus.valueMinutesReminder,
-            definedStatus: dataTime.timeBonus.definedStatus,
-          },
-        }
-      );
+      // await setDoc(
+      //   doc(db, "users", user.id, "test_points", String(new Date().getTime())),
+      //   {
+      //     idPoints: dateTime.idPoints,
+      //     createdAt: dateTime.createdAt,
+      //     entryOne: dataTime.entryOne,
+      //     exitOne: dataTime.exitOne,
+      //     entryTwo: dataTime.entryTwo,
+      //     exitTwo: dataTime.exitTwo,
+      //     objTotalTimeWork: {
+      //       reminderMinutes: dataTime.objTotalTimeWork.reminderMinutes,
+      //       totalHours: dataTime.objTotalTimeWork.totalHours,
+      //       totalMinutes: dataTime.objTotalTimeWork.totalMinutes,
+      //     },
+      //     stringTotalTime: dataTime.stringTotalTime,
+      //     timeMorning: dataTime.timeMorning,
+      //     timeLunch: dataTime.timeLunch,
+      //     timeAfternoon: dataTime.timeAfternoon,
+      //     timeBonus: {
+      //       valueHoursReminder: dataTime.timeBonus.valueHoursReminder,
+      //       valueMinutesReminder: dataTime.timeBonus.valueMinutesReminder,
+      //       definedStatus: dataTime.timeBonus.definedStatus,
+      //     },
+      //   }
+      // );
 
       setData((old) => [
         ...old,
@@ -186,7 +188,7 @@ export function Main() {
           alignItems="center"
           justifyContent="center"
         >
-          <CalendarDatePicker />
+          <CalendarDatePicker onSelectedDate={setSelected} selectedDate={selected} />
           <VStack spacing={5}>
             <Flex gap="3">
               <VStack spacing={10}>

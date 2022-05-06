@@ -148,6 +148,7 @@ export function TimeProvider({ children }: TimeProviderProps) {
 
     const returnObj = {
       idPoints: uuidv4(),
+      teste: new Date(),
       createdAt: dateNowSeconds,
       entryOne,
       exitOne,
