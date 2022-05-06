@@ -13,8 +13,8 @@ export function Menu() {
       alignItems="center"
       gap="8px"
     >
-      <Flex alignItems="flex-end">
-        <Heading color="whiteAlpha.800">Points Control</Heading>
+      <Flex alignItems="flex-end" gap="12px">
+        <Heading color="whiteAlpha.800">Control Points</Heading>
         <IoMdClock fontSize="50" color="#fff" />
       </Flex>
       <Flex alignItems="center" gap="8px" flex="1" justifyContent="flex-end">

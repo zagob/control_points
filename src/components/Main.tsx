@@ -2,10 +2,13 @@ import {
   Box,
   Button,
   Flex,
+  FormControl,
+  FormLabel,
   Spinner,
   Text,
   useBoolean,
   useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { dateTimeProps, TimeContext } from "../contexts/TimeContext";
@@ -20,6 +23,8 @@ import { Pagination } from "./Pagination";
 
 import { format } from "date-fns";
 import pt from "date-fns/locale/pt";
+import { DateTime } from "./DateTime";
+import { CalendarDatePicker } from "./Calendar";
 
 export function Main() {
   const { user } = useAuth();
@@ -158,99 +163,126 @@ export function Main() {
   }
 
   return (
-    <Box maxWidth="max-content" margin="0 auto">
-      <ModalSimulationTimePoints
-        data={dateTime}
-        isOpen={isOpen}
-        onClose={onClose}
-      />
-      {timeAdded.length > 0 ? (
-        <Text color="#fff">Horario adicionado</Text>
-      ) : (
-        <Text textAlign="center" fontSize="2xl" color="#fff">
-          Adicione seus horários
-        </Text>
-      )}
-
-      <Flex
-        maxWidth="container.lg"
-        margin="0 auto"
-        gap="8px"
-        padding="32px"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <InputTime
-          value={entryOne}
-          onChange={(e) => setEntryOne(e.target.value)}
+    <>
+      <Box maxWidth="max-content" margin="0 auto">
+        <ModalSimulationTimePoints
+          data={dateTime}
+          isOpen={isOpen}
+          onClose={onClose}
         />
-        <InputTime
-          value={exitOne}
-          onChange={(e) => setExitOne(e.target.value)}
-        />
-        <InputTime
-          value={entryTwo}
-          onChange={(e) => setEntryTwo(e.target.value)}
-        />
-        <InputTime
-          value={exitTwo}
-          onChange={(e) => setExitTwo(e.target.value)}
-        />
-        {timeAdded.length === 0 && (
-          <Button
-            width="full"
-            background="#ffd373"
-            onClick={handleSendValues}
-            disabled={
-              entryOne.length === 0 ||
-              entryTwo.length === 0 ||
-              exitOne.length === 0 ||
-              exitTwo.length === 0
-            }
-            _hover={{
-              _disabled: {},
-              _active: { background: "#ffd373" },
-              opacity: "0.4",
-            }}
-          >
-            Adicionar
-          </Button>
+        {timeAdded.length > 0 ? (
+          <Text color="#fff">Horario adicionado</Text>
+        ) : (
+          <Text textAlign="center" fontSize="2xl" color="#fff">
+            {/* Adicione seus horários */}
+          </Text>
         )}
-      </Flex>
-      <Flex mb="18px" alignItems="center" justifyContent="space-between">
-        <Button
-          _hover={{ opacity: "0.8" }}
-          background="yellowgreen"
-          textTransform="uppercase"
-          onClick={() => handleSimulationTimePoints()}
+
+        <Flex
+          maxWidth="container.lg"
+          margin="0 auto"
+          gap="8px"
+          padding="32px"
+          alignItems="center"
+          justifyContent="center"
         >
-          Simular
-        </Button>
-
-        <Text color={isTimeNegativeOrPositive ? 'green' : 'red'}>{`${timeHor}:${timeMinutes}`}</Text>
-      </Flex>
-
-      {loading && (
-        <Flex justifyContent="center">
-          <Spinner color="gray" size="xl" />
+          <CalendarDatePicker />
+          <VStack spacing={5}>
+            <Flex gap="3">
+              <VStack spacing={10}>
+                <FormControl>
+                  <FormLabel color="#fff">Entrada 1</FormLabel>
+                  <InputTime
+                    value={entryOne}
+                    onChange={(e) => setEntryOne(e.target.value)}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel color="#fff">Saída 1</FormLabel>
+                  <InputTime
+                    value={exitOne}
+                    onChange={(e) => setExitOne(e.target.value)}
+                  />
+                </FormControl>
+              </VStack>
+              <VStack spacing={10}>
+                <FormControl>
+                  <FormLabel color="#fff">Entrada 2</FormLabel>
+                  <InputTime
+                    value={entryTwo}
+                    onChange={(e) => setEntryTwo(e.target.value)}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel color="#fff">Saída 2</FormLabel>
+                  <InputTime
+                    value={exitTwo}
+                    onChange={(e) => setExitTwo(e.target.value)}
+                  />
+                </FormControl>
+              </VStack>
+            </Flex>
+            <Box>
+              {timeAdded.length === 0 && (
+                <Button
+                  w="full"
+                  background="#ffd373"
+                  onClick={handleSendValues}
+                  disabled={
+                    entryOne.length === 0 ||
+                    entryTwo.length === 0 ||
+                    exitOne.length === 0 ||
+                    exitTwo.length === 0
+                  }
+                  _hover={{
+                    _disabled: {},
+                    _active: { background: "#ffd373" },
+                    opacity: "0.4",
+                  }}
+                >
+                  Adicionar
+                </Button>
+              )}
+            </Box>
+          </VStack>
         </Flex>
-      )}
+        <Flex mb="18px" alignItems="center" justifyContent="space-between">
+          <Button
+            _hover={{ opacity: "0.8" }}
+            background="yellowgreen"
+            textTransform="uppercase"
+            onClick={() => handleSimulationTimePoints()}
+          >
+            Simular
+          </Button>
 
-      {!loading && data.length > 0 && (
-        <TableComponent
-          data={currentTableData}
-          handleShowInfoTime={handleShowInfoTime}
+          <Text
+            color={isTimeNegativeOrPositive ? "green" : "red"}
+          >{`${timeHor}:${timeMinutes}`}</Text>
+        </Flex>
+
+        {loading && (
+          <Flex justifyContent="center">
+            <Spinner color="gray" size="xl" />
+          </Flex>
+        )}
+
+        {!loading && data.length > 0 && (
+          <TableComponent
+            data={currentTableData}
+            handleShowInfoTime={handleShowInfoTime}
+          />
+        )}
+
+        {!loading && data.length === 0 && <span>Nenhum dado encontrado</span>}
+
+        <Pagination
+          currentPage={currentPage}
+          totalCount={data.length}
+          pageSize={PageSize}
+          onPageChange={(page) => setCurrentPage(page)}
         />
-      )}
-
-      {!loading && data.length === 0 && <span>Nenhum dado encontrado</span>}
-
-      <Pagination
-        currentPage={currentPage}
-        totalCount={data.length}
-        pageSize={PageSize}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
-    </Box>
+      </Box>
+    </>
   );
 }
