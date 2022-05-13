@@ -45,7 +45,6 @@ export function Main() {
   const [entryTwo, setEntryTwo] = useState("");
   const [exitTwo, setExitTwo] = useState("");
   const [selected, setSelected] = useState<Date>(new Date());
-  console.log('selected',selected)
 
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
@@ -74,7 +73,8 @@ export function Main() {
 
   const timeAdded = data?.filter(
     (item) =>
-      new Date(item?.createdAt * 1000).getDate() === new Date().getDate()
+      new Date(item?.createdAt * 1000).getDate() ===
+      new Date(selected).getDate()
   );
 
   useEffect(() => {
@@ -83,11 +83,23 @@ export function Main() {
         setLoading.on();
         const queryUser = doc(db, "users", user.id);
         const queryDocs = await getDocs(collection(queryUser, "test_points"));
-        const dataMap = queryDocs.docs.map((item) => {
-          return {
-            ...item.data(),
-          };
-        });
+        console.log(
+          "queryDocs",
+          queryDocs.docs
+            .map((item) => {
+              return {
+                ...item.data(),
+              };
+            })
+            .filter((item) => new Date(item.createdAt * 1000).getMonth() === 3)
+        );
+        const dataMap = queryDocs.docs
+          .map((item) => {
+            return {
+              ...item.data(),
+            };
+          })
+          .filter((item) => new Date(item.createdAt * 1000).getMonth() === 3);
 
         setData(dataMap);
       } finally {
@@ -103,42 +115,50 @@ export function Main() {
   async function handleSendValues() {
     try {
       const dataTime = handleCalculateHoursPoint(
+        selected,
         entryOne,
         exitOne,
         entryTwo,
         exitTwo
       );
-        console.log(dateTime)
+      console.log(entryOne, exitOne, entryTwo, exitTwo);
+      console.log("dataTime", dataTime);
+      console.log("date", dateTime);
       setEntryOne("");
       setExitOne("");
       setEntryTwo("");
       setExitTwo("");
-      // await setDoc(
-      //   doc(db, "users", user.id, "test_points", String(new Date().getTime())),
-      //   {
-      //     idPoints: dateTime.idPoints,
-      //     createdAt: dateTime.createdAt,
-      //     entryOne: dataTime.entryOne,
-      //     exitOne: dataTime.exitOne,
-      //     entryTwo: dataTime.entryTwo,
-      //     exitTwo: dataTime.exitTwo,
-      //     objTotalTimeWork: {
-      //       reminderMinutes: dataTime.objTotalTimeWork.reminderMinutes,
-      //       totalHours: dataTime.objTotalTimeWork.totalHours,
-      //       totalMinutes: dataTime.objTotalTimeWork.totalMinutes,
-      //     },
-      //     stringTotalTime: dataTime.stringTotalTime,
-      //     timeMorning: dataTime.timeMorning,
-      //     timeLunch: dataTime.timeLunch,
-      //     timeAfternoon: dataTime.timeAfternoon,
-      //     timeBonus: {
-      //       valueHoursReminder: dataTime.timeBonus.valueHoursReminder,
-      //       valueMinutesReminder: dataTime.timeBonus.valueMinutesReminder,
-      //       definedStatus: dataTime.timeBonus.definedStatus,
-      //     },
-      //   }
-      // );
-
+      await setDoc(
+        doc(
+          db,
+          "users",
+          user.id,
+          "test_points",
+          String(new Date(selected).getTime())
+        ),
+        {
+          idPoints: dataTime.idPoints,
+          createdAt: dataTime.createdAt,
+          entryOne: dataTime.entryOne,
+          exitOne: dataTime.exitOne,
+          entryTwo: dataTime.entryTwo,
+          exitTwo: dataTime.exitTwo,
+          objTotalTimeWork: {
+            reminderMinutes: dataTime.objTotalTimeWork.reminderMinutes,
+            totalHours: dataTime.objTotalTimeWork.totalHours,
+            totalMinutes: dataTime.objTotalTimeWork.totalMinutes,
+          },
+          stringTotalTime: dataTime.stringTotalTime,
+          timeMorning: dataTime.timeMorning,
+          timeLunch: dataTime.timeLunch,
+          timeAfternoon: dataTime.timeAfternoon,
+          timeBonus: {
+            valueHoursReminder: dataTime.timeBonus.valueHoursReminder,
+            valueMinutesReminder: dataTime.timeBonus.valueMinutesReminder,
+            definedStatus: dataTime.timeBonus.definedStatus,
+          },
+        }
+      );
       setData((old) => [
         ...old,
         {
@@ -150,12 +170,13 @@ export function Main() {
   }
 
   function handleSimulationTimePoints() {
-    handleCalculateHoursPoint(entryOne, exitOne, entryTwo, exitTwo);
+    handleCalculateHoursPoint(selected, entryOne, exitOne, entryTwo, exitTwo);
     onOpen();
   }
 
   function handleShowInfoTime(item: dateTimeFormatProps) {
     handleCalculateHoursPoint(
+      selected,
       item.entryOne,
       item.exitOne,
       item.entryTwo,
@@ -188,7 +209,10 @@ export function Main() {
           alignItems="center"
           justifyContent="center"
         >
-          <CalendarDatePicker onSelectedDate={setSelected} selectedDate={selected} />
+          <CalendarDatePicker
+            onSelectedDate={setSelected}
+            selectedDate={selected}
+          />
           <VStack spacing={5}>
             <Flex gap="3">
               <VStack spacing={10}>
@@ -224,7 +248,7 @@ export function Main() {
                 </FormControl>
               </VStack>
             </Flex>
-            <Box>
+            <Flex gap="10px" w="full">
               {timeAdded.length === 0 && (
                 <Button
                   w="full"
@@ -245,19 +269,18 @@ export function Main() {
                   Adicionar
                 </Button>
               )}
-            </Box>
+              <Button
+                _hover={{ opacity: "0.8" }}
+                background="yellowgreen"
+                textTransform="uppercase"
+                onClick={() => handleSimulationTimePoints()}
+              >
+                Simular
+              </Button>
+            </Flex>
           </VStack>
         </Flex>
         <Flex mb="18px" alignItems="center" justifyContent="space-between">
-          <Button
-            _hover={{ opacity: "0.8" }}
-            background="yellowgreen"
-            textTransform="uppercase"
-            onClick={() => handleSimulationTimePoints()}
-          >
-            Simular
-          </Button>
-
           <Text
             color={isTimeNegativeOrPositive ? "green" : "red"}
           >{`${timeHor}:${timeMinutes}`}</Text>

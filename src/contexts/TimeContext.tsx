@@ -1,6 +1,8 @@
 import { createContext, ReactNode, useState } from "react";
 import { format, parseISO, differenceInMinutes } from "date-fns";
+
 import { v4 as uuidv4 } from "uuid";
+import { useAuth } from "../hooks/useAuth";
 
 export interface valuesDatePros {
   totalMinutes: number;
@@ -34,18 +36,20 @@ interface TimeProviderProps {
 interface TimeContextProps {
   newDate: string;
   handleCalculateHoursPoint: (
+    selected: Date,
     entry: string,
     exitLunch: string,
     backLunch: string,
     exit: string
   ) => dateTimeProps;
-  dateTime: dateTimeProps | undefined;
+  dateTime: dateTimeProps | null;
 }
 
 export const TimeContext = createContext({} as TimeContextProps);
 
 export function TimeProvider({ children }: TimeProviderProps) {
-  const [dateTime, setDateTime] = useState<dateTimeProps>();
+  const [dateTime, setDateTime] = useState<dateTimeProps | null>(null);
+  console.log("dateTime", dateTime);
   const newDate = format(new Date(), "yyyy-MM-dd");
 
   function convertDataTime(dateLeft: Date, dateRight: Date) {
@@ -87,6 +91,7 @@ export function TimeProvider({ children }: TimeProviderProps) {
   }
 
   function handleCalculateHoursPoint(
+    selected: Date,
     entryOne: string,
     exitOne: string,
     entryTwo: string,
@@ -144,7 +149,33 @@ export function TimeProvider({ children }: TimeProviderProps) {
         (definedStatus === -1 && "down"),
     };
 
-    const dateNowSeconds = Math.floor(new Date().getTime() / 1000);
+    const dateNowSeconds = Math.floor(new Date(selected).getTime() / 1000);
+
+    // await setDoc(
+    //   doc(db, "users", user.id, "test_points", String(new Date().getTime())),
+    //   {
+    //     idPoints: uuidv4(),
+    //     createdAt: dateNowSeconds,
+    //     entryOne,
+    //     exitOne,
+    //     entryTwo,
+    //     exitTwo,
+    //     objTotalTimeWork: {
+    //       reminderMinutes: objTotalTimeWork.reminderMinutes,
+    //       totalHours: objTotalTimeWork.totalHours,
+    //       totalMinutes: objTotalTimeWork.totalMinutes,
+    //     },
+    //     stringTotalTime: stringTotalTime,
+    //     timeMorning: timeMorning,
+    //     timeLunch: timeLunch,
+    //     timeAfternoon: timeAfternoon,
+    //     timeBonus: {
+    //       valueHoursReminder: timeBonus.valueHoursReminder,
+    //       valueMinutesReminder: timeBonus.valueMinutesReminder,
+    //       definedStatus: timeBonus.definedStatus,
+    //     },
+    //   }
+    // );
 
     const returnObj = {
       idPoints: uuidv4(),

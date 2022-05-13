@@ -52,6 +52,7 @@ export const Pagination = ({
 
           return (
             <ButtonPagination
+              key={pageNumber}
               color="#000"
               onClick={() => onPageChange(pageNumber)}
               background={

@@ -13,7 +13,6 @@ export function CalendarDatePicker({
   onSelectedDate,
   selectedDate,
 }: CalendarDayPicker) {
-  console.log("selected", selectedDate);
   let footer = <p>Pick a day</p>;
   if (selectedDate) {
     footer = (

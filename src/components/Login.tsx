@@ -14,7 +14,7 @@ export function Login() {
   return (
     <Flex w="100%" alignItems="center" justify="center" height="100vh">
       <Flex gap="10px" flexDirection="column" alignItems="center">
-        <VStack
+        {/* <VStack
           flexDirection="row"
           display="flex"
           alignItems="center"
@@ -41,7 +41,7 @@ export function Login() {
             </Heading>
           </Box>
           <IoMdClock color="#fff" fontSize="150px" />
-        </VStack>
+        </VStack> */}
         <Flex w="100%" gap="12px" justifyContent="space-around">
           <InputTime />
           <InputTime />
