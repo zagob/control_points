@@ -8,77 +8,86 @@ import {
   VStack,
   Grid,
   Heading,
+  ModalHeader,
 } from "@chakra-ui/react";
-import { dateTimeProps } from "../../contexts/TimeContext";
+import { TimeContext } from "../../contexts/TimeContext";
+import { format } from "date-fns";
+import pt from "date-fns/locale/pt";
 
 import {
   AiFillCheckCircle,
   AiFillCloseCircle,
   AiOutlineClockCircle,
 } from "react-icons/ai";
+import { useContext } from "react";
 
 interface ModalComponentProps {
   isOpen: boolean;
   onClose: () => void;
-  data: dateTimeProps | null;
 }
 
 export function ModalSimulationTimePoints({
   isOpen,
   onClose,
-  data,
 }: ModalComponentProps) {
+  const { dateTimeObject } = useContext(TimeContext);
   const totalTimeMinutes = 480;
 
-  const date = data?.createdAt;
-  const upTime = data?.objTotalTimeWork.totalMinutes > totalTimeMinutes;
-  const equalTime = data?.objTotalTimeWork.totalMinutes === totalTimeMinutes;
-  const downTime = data?.objTotalTimeWork.totalMinutes < totalTimeMinutes;
+  console.log('dateTimeObject',dateTimeObject)
 
   return (
     <>
       <Modal isCentered isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent background="#c3c3c3">
-          {/* <ModalHeader>{data?.createdAt}</ModalHeader> */}
+          <ModalHeader>
+            {dateTimeObject !== null &&
+              format(
+                new Date(dateTimeObject?.selectedDate),
+                `'Dia' dd 'de' MMMM - (eeee)`,
+                {
+                  locale: pt,
+                }
+              )}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Grid gridTemplateColumns="1fr 1fr">
               <Text>
                 Entrada 1:{" "}
                 <span style={{ color: "green", fontWeight: "700" }}>
-                  {data?.entryOne}
+                  {dateTimeObject?.entryOne}
                 </span>
               </Text>
 
               <Text>
                 Saída 1:{" "}
                 <span style={{ color: "green", fontWeight: "700" }}>
-                  {data?.exitOne}
+                  {dateTimeObject?.exitOne}
                 </span>
               </Text>
 
               <Text>
                 Entrada 2:{" "}
                 <span style={{ color: "green", fontWeight: "700" }}>
-                  {data?.entryTwo}
+                  {dateTimeObject?.entryTwo}
                 </span>
               </Text>
               <Text>
                 Saída 2:{" "}
                 <span style={{ color: "green", fontWeight: "700" }}>
-                  {data?.exitTwo}
+                  {dateTimeObject?.exitTwo}
                 </span>
               </Text>
             </Grid>
             <Heading fontSize="20px" margin="12px 0">
               Tempo de horários
             </Heading>
-            <Text>Manhã: {data?.timeMorning}</Text>
-            <Text>Almoço: {data?.timeLunch}</Text>
-            <Text>Tarde: {data?.timeAfternoon}</Text>
+            <Text>Manhã (trabalho): {dateTimeObject?.timeMorning}</Text>
+            <Text>Almoço (pausa): {dateTimeObject?.timeLunch}</Text>
+            <Text>Tarde (trabalho): {dateTimeObject?.timeAfternoon}</Text>
 
-            {upTime && (
+            {dateTimeObject?.definedStatus === "UP" && (
               <VStack display="flex" justifyContent="flex-start">
                 <Heading
                   color="green.600"
@@ -91,18 +100,17 @@ export function ModalSimulationTimePoints({
                   <AiFillCheckCircle />
                 </Heading>
                 <Text w="full" padding="0 12px" fontSize="28px">
-                  {data.objTotalTimeWork.totalMinutes - totalTimeMinutes}{" "}
-                  Minutos
+                  {dateTimeObject.totalMinutes - totalTimeMinutes} Minutos
                 </Text>
               </VStack>
             )}
-            {equalTime && (
+            {dateTimeObject?.definedStatus === "EQUAL" && (
               <Heading margin="12px 0" gap="8px" fontSize="26px" display="flex">
                 {" "}
                 In Time <AiOutlineClockCircle />
               </Heading>
             )}
-            {downTime && (
+            {dateTimeObject?.definedStatus === "DOWN" && (
               <VStack display="flex" justifyContent="flex-start">
                 <Heading
                   color="red.600"
@@ -111,12 +119,11 @@ export function ModalSimulationTimePoints({
                   fontSize="26px"
                   display="flex"
                 >
-                  Tempo restantes que faltou
+                  Tempo restantes
                   <AiFillCloseCircle />
                 </Heading>
                 <Text w="full" padding="0 12px" fontSize="28px">
-                  {totalTimeMinutes - data?.objTotalTimeWork?.totalMinutes}{" "}
-                  Minutos
+                  {totalTimeMinutes - dateTimeObject?.totalMinutes} Minutos
                 </Text>
               </VStack>
             )}

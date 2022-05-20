@@ -3,6 +3,7 @@ import { Unsubscribe } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { createContext, ReactNode, useState } from "react";
+import { api } from "../services/api";
 
 import {
   GoogleAuthProvider,
@@ -67,7 +68,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log(auth)
       if (user) {
         const { displayName, uid, photoURL } = user;
 
@@ -90,6 +90,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const result = await signInWithPopup(auth, provider);
 
+    console.log('RESULT',result)
+
     if (result.user) {
       const { displayName, photoURL, uid } = result.user;
 
@@ -97,6 +99,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         id: uid,
         name: displayName,
         avatar: photoURL,
+      });
+
+      await api.post("/users/create", {
+        id: uid,
+        name: displayName,
+        image: photoURL,
       });
     }
   }

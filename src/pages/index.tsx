@@ -1,58 +1,18 @@
-import { useContext, useState } from "react";
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Spinner,
-  Text,
-  useDisclosure,
-  VStack,
-} from "@chakra-ui/react";
-import type { NextPage } from "next";
-import { IoMdClock } from "react-icons/io";
-import { InputTime } from "../components/InputTime";
-import { FcGoogle } from "react-icons/fc";
+import { Flex, Spinner, useDisclosure } from "@chakra-ui/react";
+import type { GetStaticProps, NextPage } from "next";
 import { Menu } from "../components/Menu";
-import { TableComponent } from "../components/Table";
-import { TimeContext } from "../contexts/TimeContext";
 import { useAuth } from "../hooks/useAuth";
 import { Login } from "../components/Login";
 
-import {
-  db,
-  addDoc,
-  collection,
-  getDocs,
-  doc,
-  updateDoc,
-  query,
-  getDoc,
-  setDoc,
-} from "../services/Firebase";
 import { Main } from "../components/Main";
 import { ModalComponent } from "../components/ModalContent";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../services/Firebase";
+import { useEffect } from "react";
 
 const Home: NextPage = () => {
-  const { onOpen, isOpen, onClose } = useDisclosure();
+  const { isOpen, onClose } = useDisclosure();
   const { user, loadingAuth } = useAuth();
-  const { newDate, handleCalculateHoursPoint, dateTime } =
-    useContext(TimeContext);
-  console.log("loadingAuth", loadingAuth);
-  async function handleGetUser() {
-    // setDoc(doc(db, "users", '123', 'points', String(new Date().getTime())), {
-    //   entry: '3'
-    // })
-    const queryUser = doc(db, "users", user.id);
-    const q = await getDocs(collection(queryUser, "points"));
-    console.log(
-      q.docs.map((item) => {
-        return {
-          ...item.data(),
-        };
-      })
-    );
-  }
 
   return (
     <>
@@ -80,3 +40,26 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+// export const getStaticProps: GetStaticProps = async () => {
+//   const unsubscribe = onAuthStateChanged(auth, (user) => {
+//     console.log("STATIC USER", user);
+//     return user;
+//     // if (user) {
+//     //   const { displayName, uid, photoURL } = user;
+
+//     //   // setUser({
+//     //   //   id: uid,
+//     //   //   name: displayName,
+//     //   //   avatar: photoURL,
+//     //   // });
+//     // }
+//     // setLoadingAuth.off();
+//   });
+
+//   unsubscribe();
+
+//   return {
+//     props: {},
+//   };
+// };

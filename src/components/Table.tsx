@@ -1,9 +1,11 @@
 import {
   Box,
+  Flex,
   Table,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
@@ -11,77 +13,25 @@ import {
 
 import { AiOutlineClockCircle } from "react-icons/ai";
 import { FaEdit } from "react-icons/fa";
+import { MdDeleteOutline } from "react-icons/md";
 
 import { format } from "date-fns";
 import pt from "date-fns/locale/pt";
-
-interface valuesDatePros {
-  totalMinutes: number;
-  totalHours: number;
-  reminderMinutes: string;
-}
-
-interface dateTimeProps {
-  idPoints: string;
-  createdAt: number;
-  entryOne: string;
-  exitOne: string;
-  entryTwo: string;
-  exitTwo: string;
-  objTotalTimeWork: valuesDatePros | null;
-  timeMorning: string;
-  timeLunch: string;
-  timeAfternoon: string;
-  stringTotalTime: string;
-  timeBonus: {
-    valueHoursReminder: string;
-    valueMinutesReminder: string;
-    definedStatus: string;
-  };
-}
-
-export interface dateTimeFormatProps {
-  createdAt: string;
-  entryOne: string;
-  exitOne: string;
-  entryTwo: string;
-  exitTwo: string;
-  objTotalTimeWork: valuesDatePros | null;
-  timeMorning: string;
-  timeLunch: string;
-  timeAfternoon: string;
-  stringTotalTime: string;
-  timeBonus: {
-    valueHoursReminder: string;
-    valueMinutesReminder: string;
-    definedStatus: string;
-  };
-}
+import { useContext } from "react";
+import { dateTimeProps, TimeContext } from "../contexts/TimeContext";
 interface TableDataProps {
   data: dateTimeProps[];
-  handleShowInfoTime: (item: dateTimeFormatProps) => void;
+  handleShowInfoTime: (item: dateTimeProps) => void;
+  handleDeletePoint: (id: string) => void;
 }
 
-export function TableComponent({ data, handleShowInfoTime }: TableDataProps) {
-  const dataFormat = data.map((item) => {
-    return {
-      ...item,
-      createdAt: new Date(item.createdAt * 1000),
-    };
-  });
-
-  const formatDateFnsDate = dataFormat?.map((item) => {
-    return {
-      ...item,
-      createdAt: format(item?.createdAt, `dd 'de' MMM`, {
-        locale: pt,
-      }),
-    };
-  });
+export function TableComponent({ data, handleShowInfoTime, handleDeletePoint }: TableDataProps) {
+  const { dateTime } = useContext(TimeContext);
 
   return (
     <>
       <Box borderRadius="12px" background="blackAlpha.300">
+        <Text>sd</Text>
         <TableContainer color="#fff">
           <Table variant="unstyled">
             <Thead>
@@ -97,37 +47,53 @@ export function TableComponent({ data, handleShowInfoTime }: TableDataProps) {
               </Tr>
             </Thead>
             <Tbody>
-              {formatDateFnsDate.map((item, idx) => (
-                <Tr
-                  key={item.idPoints}
-                  color={
-                    (item.timeBonus.definedStatus === "up" && "green.400") ||
-                    (item.timeBonus.definedStatus === "down" && "red.400")
+              {dateTime?.map((item, idx) => {
+                const itemSelectedDate = format(
+                  new Date(item.selectedDate),
+                  `dd 'de' MMM - (eee)`,
+                  {
+                    locale: pt,
                   }
-                >
-                  <Td>{item.createdAt}</Td>
-                  <Td>{item.entryOne}</Td>
-                  <Td>{item.exitOne}</Td>
-                  <Td>{item.entryTwo}</Td>
-                  <Td>{item.exitTwo}</Td>
-                  <Td display="flex" alignItems="center" gap="8px">
-                    {" "}
-                    {item.timeBonus.definedStatus === "down" ? (
-                      "- "
-                    ) : (
-                      <AiOutlineClockCircle fontSize="18px" />
-                    )}
-                    {`${item.timeBonus.valueHoursReminder}:${item.timeBonus.valueMinutesReminder}`}
-                  </Td>
-                  <Td>
-                    <FaEdit
-                      cursor="pointer"
-                      onClick={() => handleShowInfoTime(item)}
-                      color="yellow"
-                    />
-                  </Td>
-                </Tr>
-              ))}
+                );
+                return (
+                  <Tr
+                    key={item.id}
+                    color={
+                      (item.definedStatus === "UP" && "green.400") ||
+                      (item.definedStatus === "DOWN" && "red.400")
+                    }
+                  >
+                    <Td>{itemSelectedDate}</Td>
+                    <Td>{item.entryOne}</Td>
+                    <Td>{item.exitOne}</Td>
+                    <Td>{item.entryTwo}</Td>
+                    <Td>{item.exitTwo}</Td>
+                    <Td display="flex" alignItems="center" gap="8px">
+                      {" "}
+                      {item.definedStatus === "down" ? (
+                        "- "
+                      ) : (
+                        <AiOutlineClockCircle fontSize="18px" />
+                      )}
+                      {`${item.hoursReminder}:${item.minutesReminder}`}
+                    </Td>
+                    <Td>
+                      <Flex gap={2}>
+                        <FaEdit
+                          cursor="pointer"
+                          onClick={() => handleShowInfoTime(item)}
+                          color="yellow"
+                        />
+                        <MdDeleteOutline
+                          cursor="pointer"
+                          onClick={() => handleDeletePoint(item.id)}
+                          color="red"
+                        />
+                      </Flex>
+                    </Td>
+                  </Tr>
+                );
+              })}
             </Tbody>
           </Table>
         </TableContainer>

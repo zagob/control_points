@@ -1,8 +1,9 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useContext } from "react";
 import "react-day-picker/dist/style.css";
-import { DayPicker, DayPickerProps } from "react-day-picker";
-import { format } from "date-fns";
+import { DayPicker } from "react-day-picker";
 import ptBr from "date-fns/locale/pt";
+import { TimeContext } from "../contexts/TimeContext";
+import { queryClient } from "../services/queryClient";
 
 interface CalendarDayPicker {
   onSelectedDate: Dispatch<SetStateAction<Date>>;
@@ -13,45 +14,30 @@ export function CalendarDatePicker({
   onSelectedDate,
   selectedDate,
 }: CalendarDayPicker) {
-  let footer = <p>Pick a day</p>;
-  if (selectedDate) {
-    footer = (
-      <p>
-        Picked{" "}
-        {format(selectedDate, "PP", {
-          locale: ptBr,
-        })}
-      </p>
-    );
+  const { dateTime, monthSelected, setMonthSelected } = useContext(TimeContext);
+
+  const disabledDays = dateTime?.map((item) => new Date(item.selectedDate));
+
+  // const disabledDays = [
+  //   new Date(2022, 4, 10),
+  //   new Date(2022, 4, 12),
+  //   new Date(2022, 4, 20),
+  //   // { from: new Date(2022, 4, 18), to: new Date(2022, 4, 29) }
+  // ];
+
+  function handleChangeMonth(event: Date) {
+    setMonthSelected(event.getMonth() + 1);
+    queryClient.removeQueries();
+    queryClient.refetchQueries();
   }
 
-  //   const disabledDays = useMemo(() => {
-  //     const dates = monthAvailability
-  //       .filter(monthDay => monthDay.available === false)
-  //       .map(monthDay => {
-  //         const year = currentMonth.getFullYear();
-  //         const month = currentMonth.getMonth();
-
-  //         return new Date(year, month, monthDay.day);
-  //       });
-
-  //       return dates;
-  //   }, [currentMonth, monthAvailability]);
-  const disabledDays = [
-    new Date(2022, 4, 10),
-    new Date(2022, 4, 12),
-    new Date(2022, 4, 20),
-    // { from: new Date(2022, 4, 18), to: new Date(2022, 4, 29) }
-  ];
   return (
     <DayPicker
       mode="single"
+      month={new Date(2022, monthSelected - 1)}
+      onMonthChange={(event) => handleChangeMonth(event)}
       locale={ptBr}
-      disabled={[
-        // { before: new Date() },
-        { dayOfWeek: [0, 6] },
-        ...disabledDays,
-      ]}
+      disabled={[{ dayOfWeek: [0, 6] }, ...disabledDays]}
       modifiers={{
         available: { dayOfWeek: [1, 2, 3, 4, 5] },
       }}
