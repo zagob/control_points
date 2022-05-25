@@ -41,7 +41,6 @@ export const AuthContext = createContext({} as AuthContextProps);
 export function AuthProvider({ children }: AuthProviderProps) {
   const [loadingAuth, setLoadingAuth] = useBoolean(true);
   const [user, setUser] = useState<User>();
-  console.log(user);
 
   async function handleAuthState() {
     onAuthStateChanged(auth, async (user) => {
@@ -89,8 +88,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const provider = new GoogleAuthProvider();
 
     const result = await signInWithPopup(auth, provider);
-
-    console.log('RESULT',result)
 
     if (result.user) {
       const { displayName, photoURL, uid } = result.user;

@@ -6,3 +6,9 @@ export function formatMonthDateFns(month: number) {
     locale: pt,
   });
 }
+
+export function formatYearDateFns(month: number, year: number) {
+  return format(new Date(new Date().getFullYear(), month - 1), "yyy", {
+    locale: pt,
+  });
+}

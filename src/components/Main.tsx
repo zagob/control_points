@@ -3,40 +3,33 @@ import {
   Button,
   ButtonGroup,
   Flex,
-  FormControl,
-  FormLabel,
   IconButton,
   Spinner,
   Text,
   useBoolean,
   useDisclosure,
   useToast,
-  VStack,
 } from "@chakra-ui/react";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { dateTimeProps, TimeContext } from "../contexts/TimeContext";
 import { useAuth } from "../hooks/useAuth";
-import { InputTime } from "./InputTime";
 
 import { ModalSimulationTimePoints } from "./modals/ModalSimulationTimePoints";
 import { TableComponent } from "./Table";
 
 import { Pagination } from "./Pagination";
 
-import { format } from "date-fns";
-import pt from "date-fns/locale/pt";
 import { CalendarDatePicker } from "./Calendar";
 import { api } from "../services/api";
 import {
   BsFillArrowLeftCircleFill,
   BsFillArrowRightCircleFill,
 } from "react-icons/bs";
-import { formatMonthDateFns } from "../utils/formatDate";
+import { formatMonthDateFns, formatYearDateFns } from "../utils/formatDate";
 
-import { useQuery, RefetchOptions } from "react-query";
+import { useQuery } from "react-query";
 import { queryClient } from "../services/queryClient";
 import { FormInput } from "./FormInput";
-import { ModalMessage } from "./modals/ModalMessage";
 
 export function Main() {
   const toast = useToast();
@@ -50,7 +43,8 @@ export function Main() {
     setDateTimeObject,
     setMonthSelected,
     monthSelected,
-    loadingPoint,
+    yearSelected,
+    setYearSelected,
   } = useContext(TimeContext);
   const [entryOne, setEntryOne] = useState("");
   const [exitOne, setExitOne] = useState("");
@@ -60,43 +54,35 @@ export function Main() {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const OverlayOne = () => (
-    <ModalSimulationTimePoints isOpen={isOpen} onClose={onClose} />
-  );
-
-  const OverlayTwo = () => <ModalMessage isOpen={isOpen} onClose={onClose} />;
-
-  const [overlay, setOverlay] = useState(<OverlayOne />);
   const { data, isFetching, error } = useQuery(
     ["data", currentPage],
     async () => {
       const response = await api.get(
-        `/points/list/${user?.id}?year=2022&month=${monthSelected}`
+        `/points/list/${user?.id}?year=${yearSelected}&month=${monthSelected}&page=${currentPage}`
       );
+
       setDateTime(response.data);
 
-      console.log("responseee", response.data);
       return response.data;
     },
     {
       staleTime: 1000 * 2,
     }
   );
-  console.log("dddddd", data);
 
-  let PageSize = 4;
+  let PageSize = 5;
   const currentTableData = useMemo(() => {
-    const firstPageIndex = (currentPage - 1) * PageSize;
-    const lastPageIndex = firstPageIndex + PageSize;
-    return dateTime?.slice(firstPageIndex, lastPageIndex);
+    const firstPageIndex = (currentPage - 1) * dateTime?.totalPage;
+    const lastPageIndex = firstPageIndex + dateTime?.totalPage;
+    return dateTime?.listDateMonth.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, dateTime]);
 
-  const totalMinutes = dateTime?.reduce((acc, value) => {
+  const totalMinutes = dateTime?.listDateMonth.reduce((acc, value) => {
     return acc + value.totalMinutes;
   }, 0);
 
   const subtractTotalMinutesVsTotalMinutesDefault =
-    totalMinutes - 480 * dateTime?.length;
+    totalMinutes - 480 * dateTime?.listDateMonth.length;
 
   const isTimeNegativeOrPositive = Math.sign(
     subtractTotalMinutesVsTotalMinutesDefault
@@ -108,7 +94,7 @@ export function Main() {
   const timeMinutes = String(convertNumber % 60).padStart(2, "0");
 
   const timeAdded =
-    dateTime?.filter(
+    dateTime?.listDateMonth.filter(
       (item) =>
         new Date(item?.selectedDate).getDate() === new Date(selected).getDate()
     ).length > 0;
@@ -144,6 +130,13 @@ export function Main() {
     setExitOne("");
     setEntryTwo("");
     setExitTwo("");
+
+    toast({
+      title: "data criada com sucesso!",
+      position: "top",
+      status: "success",
+      isClosable: true,
+    });
   }
 
   async function handleShowInfoTime(item: dateTimeProps) {
@@ -156,7 +149,12 @@ export function Main() {
   async function handleDeletePoint(id: string) {
     await api.delete(`/points/delete/${id}`);
 
-    setDateTime((old) => old.filter((item) => item.id !== id));
+    setDateTime((old) => {
+      return {
+        ...old,
+        listDateMonth: old.listDateMonth.filter((item) => item.id !== id),
+      };
+    });
   }
 
   function handleBackMonth() {
@@ -171,9 +169,22 @@ export function Main() {
     queryClient.refetchQueries();
   }
 
+  function handleBackYear() {
+    console.log(yearSelected);
+    setYearSelected(yearSelected - 1);
+    queryClient.removeQueries();
+    queryClient.refetchQueries();
+  }
+
+  function handleNextYear() {
+    setYearSelected(yearSelected + 1);
+    queryClient.removeQueries();
+    queryClient.refetchQueries();
+  }
+
   return (
     <>
-      <Box maxWidth="max-content" margin="0 auto">
+      <Box maxWidth="max-content" margin="0 auto" paddingBottom="32px">
         <ModalSimulationTimePoints isOpen={isOpen} onClose={onClose} />
         {timeAdded ? (
           <Text color="#fff">Horario adicionado</Text>
@@ -226,7 +237,7 @@ export function Main() {
             <IconButton
               size="md"
               disabled={monthSelected === 1}
-              aria-label="Add to friends"
+              aria-label="back month"
               icon={<BsFillArrowLeftCircleFill />}
               onClick={handleBackMonth}
             />
@@ -240,14 +251,37 @@ export function Main() {
             </Button>
             <IconButton
               disabled={monthSelected === 12}
-              aria-label="Add to friends"
+              aria-label="next month"
               size="md"
               icon={<BsFillArrowRightCircleFill />}
               onClick={handleNextMonth}
             />
           </ButtonGroup>
 
-          {dateTime.length > 0 ? (
+          <ButtonGroup size="sm" isAttached variant="solid">
+            <IconButton
+              size="md"
+              aria-label="year month"
+              icon={<BsFillArrowLeftCircleFill />}
+              onClick={handleBackYear}
+            />
+            <Button
+              size="md"
+              w="24"
+              _hover={{ cursor: "not-allowed" }}
+              background="#fff"
+            >
+              {yearSelected}
+            </Button>
+            <IconButton
+              aria-label="year month"
+              size="md"
+              icon={<BsFillArrowRightCircleFill />}
+              onClick={handleNextYear}
+            />
+          </ButtonGroup>
+
+          {dateTime?.listDateMonth.length > 0 ? (
             <Text
               color={isTimeNegativeOrPositive === 1 ? "green" : "red"}
             >{`Total de tempo ${
@@ -262,20 +296,22 @@ export function Main() {
           )}
         </Flex>
 
-        {!loading && dateTime?.length > 0 && (
-          <TableComponent
-            data={currentTableData}
-            handleShowInfoTime={handleShowInfoTime}
-            handleDeletePoint={handleDeletePoint}
-          />
-        )}
+        {!loading && dateTime?.listDateMonth.length > 0 && (
+          <>
+            <TableComponent
+              data={currentTableData}
+              handleShowInfoTime={handleShowInfoTime}
+              handleDeletePoint={handleDeletePoint}
+            />
 
-        <Pagination
-          currentPage={currentPage}
-          totalCount={dateTime?.length}
-          pageSize={PageSize}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
+            {/* <Pagination
+              currentPage={currentPage}
+              totalCount={dateTime?.totalCount}
+              pageSize={PageSize}
+              onPageChange={(page) => setCurrentPage(page)}
+            /> */}
+          </>
+        )}
       </Box>
     </>
   );

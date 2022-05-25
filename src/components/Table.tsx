@@ -25,13 +25,16 @@ interface TableDataProps {
   handleDeletePoint: (id: string) => void;
 }
 
-export function TableComponent({ data, handleShowInfoTime, handleDeletePoint }: TableDataProps) {
+export function TableComponent({
+  data,
+  handleShowInfoTime,
+  handleDeletePoint,
+}: TableDataProps) {
   const { dateTime } = useContext(TimeContext);
 
   return (
     <>
-      <Box borderRadius="12px" background="blackAlpha.300">
-        <Text>sd</Text>
+      <Box borderRadius="12px" background="blackAlpha.300" height="300px"  overflowY="scroll">
         <TableContainer color="#fff">
           <Table variant="unstyled">
             <Thead>
@@ -47,7 +50,7 @@ export function TableComponent({ data, handleShowInfoTime, handleDeletePoint }: 
               </Tr>
             </Thead>
             <Tbody>
-              {dateTime?.map((item, idx) => {
+              {dateTime?.listDateMonth.map((item, idx) => {
                 const itemSelectedDate = format(
                   new Date(item.selectedDate),
                   `dd 'de' MMM - (eee)`,

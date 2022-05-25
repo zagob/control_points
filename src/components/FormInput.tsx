@@ -91,7 +91,12 @@ export function FormInput({
             }}
             background="yellowgreen"
             textTransform="uppercase"
-            disabled={timeAdded}
+            disabled={
+              entryOne.length === 0 ||
+              entryTwo.length === 0 ||
+              exitOne.length === 0 ||
+              exitTwo.length === 0
+            }
             onClick={() => handleSendValues(true)}
           >
             Simular
