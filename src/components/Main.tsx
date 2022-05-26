@@ -192,7 +192,7 @@ export function Main() {
           alignItems="center"
           justifyContent="center"
           // height="360px"
-          flexDirection={{ base: 'column', lg: 'row' }}
+          flexDirection={{ base: "column", lg: "row" }}
         >
           <Box height="360px">
             <CalendarDatePicker
@@ -221,10 +221,10 @@ export function Main() {
         )}
 
         <Flex
-          w={{base: '100%', lg: 'container.lg'}}
-          justifyContent={{base: 'center', lg: 'space-between'}}
+          w={{ base: "100%", lg: "container.lg" }}
+          justifyContent={{ base: "center", lg: "space-between" }}
           alignItems="center"
-          flexDirection={{ base: 'column', lg: 'row' }}
+          flexDirection={{ base: "column", lg: "row" }}
           gap="10px"
         >
           <ButtonGroup size="sm" isAttached variant="solid">
@@ -293,7 +293,6 @@ export function Main() {
         {!loading && dateTime?.listDateMonth.length > 0 && (
           <>
             <TableComponent
-              data={dateTime}
               handleShowInfoTime={handleShowInfoTime}
               handleDeletePoint={handleDeletePoint}
             />

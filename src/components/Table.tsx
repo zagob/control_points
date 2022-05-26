@@ -20,13 +20,11 @@ import pt from "date-fns/locale/pt";
 import { useContext } from "react";
 import { dateTimeProps, TimeContext } from "../contexts/TimeContext";
 interface TableDataProps {
-  data: dateTimeProps[];
   handleShowInfoTime: (item: dateTimeProps) => void;
   handleDeletePoint: (id: string) => void;
 }
 
 export function TableComponent({
-  data,
   handleShowInfoTime,
   handleDeletePoint,
 }: TableDataProps) {
@@ -34,7 +32,12 @@ export function TableComponent({
 
   return (
     <>
-      <Box borderRadius="12px" background="blackAlpha.300" height="300px"  overflowY="scroll">
+      <Box
+        borderRadius="12px"
+        background="blackAlpha.300"
+        height="300px"
+        overflowY="scroll"
+      >
         <TableContainer color="#fff">
           <Table variant="unstyled">
             <Thead>
