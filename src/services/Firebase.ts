@@ -19,12 +19,12 @@ import {
 } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAs2rAO7tOOR21Ijk8hyYocU5gXwmsHlbE",
-  authDomain: "control-points.firebaseapp.com",
-  projectId: "control-points",
-  storageBucket: "control-points.appspot.com",
-  messagingSenderId: "331056463861",
-  appId: "1:331056463861:web:f4926d117461e4b5fc6abc",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGIND,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APPID,
 };
 
 const app = initializeApp(firebaseConfig);
