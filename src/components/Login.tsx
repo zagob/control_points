@@ -14,35 +14,12 @@ export function Login() {
   return (
     <Flex w="100%" alignItems="center" justify="center" height="100vh">
       <Flex gap="10px" flexDirection="column" alignItems="center">
-        {/* <VStack
-          flexDirection="row"
-          display="flex"
-          alignItems="center"
+        <Flex
+          w={{ base: '', lg: '100%' }}
           gap="12px"
+          justifyContent="space-around"
+          flexDirection={{ base: "column", lg: "row" }}
         >
-          <Box>
-            <Heading
-              lineHeight="50px"
-              size="2xl"
-              fontWeight="400"
-              color="#fff"
-              textTransform="uppercase"
-            >
-              <span style={{ fontWeight: "600" }}>Controle</span> de forma fácil
-            </Heading>
-            <Heading
-              lineHeight="50px"
-              size="2xl"
-              fontWeight="400"
-              color="#fff"
-              textTransform="uppercase"
-            >
-              seus horários de pontos
-            </Heading>
-          </Box>
-          <IoMdClock color="#fff" fontSize="150px" />
-        </VStack> */}
-        <Flex w="100%" gap="12px" justifyContent="space-around">
           <InputTime />
           <InputTime />
           <InputTime />
@@ -50,17 +27,17 @@ export function Login() {
         </Flex>
         <Button
           textTransform="uppercase"
-          padding="32px 0"
-          fontSize="26px"
+          padding={{ base: "10px 0", lg: "32px 0" }}
+          fontSize={{ base: "18", lg: "26px" }}
           fontWeight="700"
           background="green.400"
-          w="100%"
+          w={{ base: "200px", lg: "100%" }}
           _hover={{ opacity: "0.8" }}
         >
           Simular
         </Button>
         <Box w="full" mt="32px">
-          <Text fontSize="22px" color="#fff" fontWeight="300">
+          <Text fontSize={{ base: '18px', lg: '22px' }} color="#fff" fontWeight="300">
             Faça login com google para gerenciar <br /> suas horas de pontos.
           </Text>
 
