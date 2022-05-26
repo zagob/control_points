@@ -12,6 +12,7 @@ export function Menu() {
       p="12px 32px"
       alignItems="center"
       gap="8px"
+      flexDirection={{ base: 'column', lg: 'row' }}
     >
       <Flex alignItems="flex-end" gap="12px">
         <Heading color="whiteAlpha.800">Control Points</Heading>

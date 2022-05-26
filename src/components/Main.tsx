@@ -17,8 +17,6 @@ import { useAuth } from "../hooks/useAuth";
 import { ModalSimulationTimePoints } from "./modals/ModalSimulationTimePoints";
 import { TableComponent } from "./Table";
 
-import { Pagination } from "./Pagination";
-
 import { CalendarDatePicker } from "./Calendar";
 import { api } from "../services/api";
 import {
@@ -69,13 +67,6 @@ export function Main() {
       staleTime: 1000 * 2,
     }
   );
-
-  let PageSize = 5;
-  const currentTableData = useMemo(() => {
-    const firstPageIndex = (currentPage - 1) * dateTime?.totalPage;
-    const lastPageIndex = firstPageIndex + dateTime?.totalPage;
-    return dateTime?.listDateMonth.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage, dateTime]);
 
   const totalMinutes = dateTime?.listDateMonth.reduce((acc, value) => {
     return acc + value.totalMinutes;
@@ -200,7 +191,8 @@ export function Main() {
           padding="32px"
           alignItems="center"
           justifyContent="center"
-          height="360px"
+          // height="360px"
+          flexDirection={{ base: 'column', lg: 'row' }}
         >
           <Box height="360px">
             <CalendarDatePicker
@@ -229,9 +221,11 @@ export function Main() {
         )}
 
         <Flex
-          w="container.lg"
-          justifyContent="space-between"
+          w={{base: '100%', lg: 'container.lg'}}
+          justifyContent={{base: 'center', lg: 'space-between'}}
           alignItems="center"
+          flexDirection={{ base: 'column', lg: 'row' }}
+          gap="10px"
         >
           <ButtonGroup size="sm" isAttached variant="solid">
             <IconButton
@@ -299,17 +293,10 @@ export function Main() {
         {!loading && dateTime?.listDateMonth.length > 0 && (
           <>
             <TableComponent
-              data={currentTableData}
+              data={dateTime}
               handleShowInfoTime={handleShowInfoTime}
               handleDeletePoint={handleDeletePoint}
             />
-
-            {/* <Pagination
-              currentPage={currentPage}
-              totalCount={dateTime?.totalCount}
-              pageSize={PageSize}
-              onPageChange={(page) => setCurrentPage(page)}
-            /> */}
           </>
         )}
       </Box>
