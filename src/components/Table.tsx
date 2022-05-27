@@ -37,6 +37,7 @@ export function TableComponent({
         background="blackAlpha.300"
         height="300px"
         overflowY="scroll"
+        padding="0 32px"
       >
         <TableContainer color="#fff">
           <Table variant="unstyled">

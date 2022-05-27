@@ -276,7 +276,7 @@ export function Main() {
           </ButtonGroup>
 
           {dateTime?.listDateMonth.length > 0 ? (
-            <Text
+            <Text padding="0 32px"
               color={isTimeNegativeOrPositive === 1 ? "green" : "red"}
             >{`Total de tempo ${
               isTimeNegativeOrPositive === 1 ? "Ganhos" : "Restantes"
