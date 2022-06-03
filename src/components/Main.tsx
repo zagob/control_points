@@ -10,7 +10,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { dateTimeProps, TimeContext } from "../contexts/TimeContext";
 import { useAuth } from "../hooks/useAuth";
 
@@ -23,7 +23,7 @@ import {
   BsFillArrowLeftCircleFill,
   BsFillArrowRightCircleFill,
 } from "react-icons/bs";
-import { formatMonthDateFns, formatYearDateFns } from "../utils/formatDate";
+import { formatMonthDateFns } from "../utils/formatDate";
 
 import { useQuery } from "react-query";
 import { queryClient } from "../services/queryClient";
@@ -50,13 +50,11 @@ export function Main() {
   const [exitTwo, setExitTwo] = useState("");
   const [selected, setSelected] = useState<Date>(new Date());
 
-  const [currentPage, setCurrentPage] = useState(1);
-
   const { data, isFetching, error } = useQuery(
-    ["data", currentPage],
+    ["data"],
     async () => {
       const response = await api.get(
-        `/points/list/${user?.id}?year=${yearSelected}&month=${monthSelected}&page=${currentPage}`
+        `/points/list/${user?.id}?year=${yearSelected}&month=${monthSelected}`
       );
 
       setDateTime(response.data);
@@ -68,12 +66,12 @@ export function Main() {
     }
   );
 
-  const totalMinutes = dateTime?.listDateMonth.reduce((acc, value) => {
+  const totalMinutes = dateTime?.reduce((acc, value) => {
     return acc + value.totalMinutes;
   }, 0);
 
   const subtractTotalMinutesVsTotalMinutesDefault =
-    totalMinutes - 480 * dateTime?.listDateMonth.length;
+    totalMinutes - 480 * dateTime?.length;
 
   const isTimeNegativeOrPositive = Math.sign(
     subtractTotalMinutesVsTotalMinutesDefault
@@ -85,7 +83,7 @@ export function Main() {
   const timeMinutes = String(convertNumber % 60).padStart(2, "0");
 
   const timeAdded =
-    dateTime?.listDateMonth.filter(
+    dateTime?.filter(
       (item) =>
         new Date(item?.selectedDate).getDate() === new Date(selected).getDate()
     ).length > 0;
@@ -143,7 +141,7 @@ export function Main() {
     setDateTime((old) => {
       return {
         ...old,
-        listDateMonth: old.listDateMonth.filter((item) => item.id !== id),
+        listDateMonth: old.filter((item) => item.id !== id),
       };
     });
   }
@@ -275,8 +273,9 @@ export function Main() {
             />
           </ButtonGroup>
 
-          {dateTime?.listDateMonth.length > 0 ? (
-            <Text padding="0 32px"
+          {dateTime?.length > 0 ? (
+            <Text
+              padding="0 32px"
               color={isTimeNegativeOrPositive === 1 ? "green" : "red"}
             >{`Total de tempo ${
               isTimeNegativeOrPositive === 1 ? "Ganhos" : "Restantes"
@@ -290,7 +289,7 @@ export function Main() {
           )}
         </Flex>
 
-        {!loading && dateTime?.listDateMonth.length > 0 && (
+        {!loading && dateTime?.length > 0 && (
           <>
             <TableComponent
               handleShowInfoTime={handleShowInfoTime}

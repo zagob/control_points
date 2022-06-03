@@ -54,7 +54,7 @@ export function TableComponent({
               </Tr>
             </Thead>
             <Tbody>
-              {dateTime?.listDateMonth.map((item, idx) => {
+              {dateTime?.map((item, idx) => {
                 const itemSelectedDate = format(
                   new Date(item.selectedDate),
                   `dd 'de' MMM - (eee)`,

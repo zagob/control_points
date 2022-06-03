@@ -31,15 +31,10 @@ interface TimeProviderProps {
   children: ReactNode;
 }
 
-interface SetDateTimeProps {
-  totalPage: number;
-  totalCount: number;
-  listDateMonth: dateTimeProps[];
-}
 
 interface TimeContextProps {
-  dateTime: SetDateTimeProps | null;
-  setDateTime: Dispatch<SetStateAction<SetDateTimeProps>>;
+  dateTime: dateTimeProps[] | null;
+  setDateTime: Dispatch<SetStateAction<dateTimeProps[]>>;
   dateTimeObject: dateTimeProps | null;
   setDateTimeObject: Dispatch<SetStateAction<dateTimeProps>>;
   setMonthSelected: Dispatch<SetStateAction<number>>;
@@ -53,7 +48,7 @@ export const TimeContext = createContext({} as TimeContextProps);
 export function TimeProvider({ children }: TimeProviderProps) {
   const { user } = useAuth();
 
-  const [dateTime, setDateTime] = useState<SetDateTimeProps | null>();
+  const [dateTime, setDateTime] = useState<dateTimeProps[] | null>();
   const [dateTimeObject, setDateTimeObject] = useState<dateTimeProps | null>(
     null
   );
