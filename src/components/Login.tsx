@@ -7,6 +7,7 @@ import {
   Heading,
   HStack,
   Text,
+  useDimensions,
   VStack,
 } from "@chakra-ui/react";
 import { IoMdClock } from "react-icons/io";
@@ -21,8 +22,19 @@ export function Login() {
     await signInWithGoogle();
     await handleAuthState();
   }
+
+  async function handleSimulation() {
+
+  }
+  
   return (
-    <Flex w="100%" alignItems="center" justify="center" height="100vh">
+    <Flex
+      w="100%"
+      alignItems="center"
+      justify="center"
+      height="100vh"
+      padding="0 2rem"
+    >
       <Flex gap="10px" flexDirection="column" alignItems="center">
         <Flex width="100%">
           <Flex
@@ -30,10 +42,10 @@ export function Login() {
             alignItems="center"
             justifyContent="center"
           >
-            <Heading color="#fff" fontSize={{ base: "18px", lg: "28px" }}>
+            <Heading color="#fff" fontSize={{ base: "0.7rem", lg: "1.5rem" }}>
               CONTROLE DE FORMA FÁCIL
             </Heading>
-            <Heading color="#fff" fontSize={{ base: "18px", lg: "26px" }}>
+            <Heading color="#fff" fontSize={{ base: "0.7rem", lg: "1.5rem" }}>
               SEUS PONTOS DE HORÁRIOS.
             </Heading>
           </Flex>
@@ -73,13 +85,14 @@ export function Login() {
             background="green.400"
             w="100%"
             _hover={{ opacity: "0.8" }}
+            onClick={handleSimulation}
           >
             Simular
           </Button>
         </Flex>
         <Box w="full" mt="32px">
           <Text
-            fontSize={{ base: "18px", lg: "22px" }}
+            fontSize={{ base: "0.7rem", lg: "2rem" }}
             color="#fff"
             fontWeight="300"
           >
@@ -94,6 +107,7 @@ export function Login() {
             color="#fff"
             _hover={{ opacity: "0.8" }}
             onClick={signAndCreateUserDB}
+            fontSize={{ base: "0.7rem", lg: "2rem" }}
           >
             <FcGoogle fontSize="32px" />
             Fazer login com Google

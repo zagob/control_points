@@ -38,6 +38,8 @@ export function TableComponent({
         height="100%"
         overflowY="scroll"
         padding="0 32px"
+        overflowX={{ base: 'scroll' }}
+        width={{ base: '100vw', lg: '100%' }}
       >
         <TableContainer color="#fff">
           <Table variant="unstyled" size="sm">

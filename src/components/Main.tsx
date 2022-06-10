@@ -22,9 +22,11 @@ import { TableComponent } from "./Table";
 import { CalendarDatePicker } from "./Calendar";
 import { api } from "../services/api";
 import {
+  BsArrowClockwise,
   BsFillArrowLeftCircleFill,
   BsFillArrowRightCircleFill,
 } from "react-icons/bs";
+import { ClipboardText } from "phosphor-react";
 import { formatMonthDateFns } from "../utils/formatDate";
 
 import { useQuery } from "react-query";
@@ -175,7 +177,7 @@ export function Main() {
   return (
     <>
       <ModalSimulationTimePoints isOpen={isOpen} onClose={onClose} />
-      <Grid templateColumns="400px 1fr" gap={6}>
+      <Grid templateColumns={{ base: '1fr', lg: '400px 1fr' }} gap={6} >
         <GridItem height="100%">
           <Flex
             flexDirection="column"
@@ -260,9 +262,9 @@ export function Main() {
 
             {!isLoading && (
               <>
-                {dateTime?.length > 0 ? (
+                {dateTime?.length > 0 && (
                   <Text
-                    fontSize="0.9rem"
+                    fontSize={{ base: '0.6rem', lg: '0.9rem' }}
                     fontWeight="bold"
                     color={isTimeNegativeOrPositive === 1 ? "green" : "red"}
                   >{`Total de tempo ${
@@ -270,14 +272,6 @@ export function Main() {
                   } no mês de ${formatMonthDateFns(
                     monthSelected
                   )}, ${timeHor} horas e ${timeMinutes} minutos`}</Text>
-                ) : (
-                  <Text
-                    fontSize="0.9rem"
-                    fontWeight="bold"
-                    color={isTimeNegativeOrPositive === 1 ? "green" : "red"}
-                  >
-                    Não existem horários cadastrados neste mês
-                  </Text>
                 )}
               </>
             )}
@@ -287,10 +281,26 @@ export function Main() {
               <Spinner size="xl" color="white" />
             </Flex>
           ) : (
-            <TableComponent
-              handleShowInfoTime={handleShowInfoTime}
-              handleDeletePoint={handleDeletePoint}
-            />
+            <>
+              {data.length > 0 ? (
+                <TableComponent
+                  handleShowInfoTime={handleShowInfoTime}
+                  handleDeletePoint={handleDeletePoint}
+                />
+              ) : (
+                // <Text color="#fff">n tem</Text>
+                <Flex
+                  w="100%"
+                  h="100%"
+                  alignItems="center"
+                  justifyContent="center"
+                  flexDirection="column"
+                >
+                  <ClipboardText size={100} weight="thin" color="gray" />
+                  <Text color="gray">Não existem horarios cadastrados!</Text>
+                </Flex>
+              )}
+            </>
           )}
         </GridItem>
       </Grid>
