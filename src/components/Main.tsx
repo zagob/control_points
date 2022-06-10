@@ -3,6 +3,8 @@ import {
   Button,
   ButtonGroup,
   Flex,
+  Grid,
+  GridItem,
   IconButton,
   Spinner,
   Text,
@@ -50,7 +52,7 @@ export function Main() {
   const [exitTwo, setExitTwo] = useState("");
   const [selected, setSelected] = useState<Date>(new Date());
 
-  const { data, isFetching, error } = useQuery(
+  const { data, isFetching, error, isLoading } = useQuery(
     ["data"],
     async () => {
       const response = await api.get(
@@ -100,7 +102,7 @@ export function Main() {
     }
     const date = {
       userId: user.id,
-      selectedDate: selected,
+      selectedDate: selected.toISOString(),
       entryOne,
       exitOne,
       entryTwo,
@@ -159,7 +161,6 @@ export function Main() {
   }
 
   function handleBackYear() {
-    console.log(yearSelected);
     setYearSelected(yearSelected - 1);
     queryClient.removeQueries();
     queryClient.refetchQueries();
@@ -173,131 +174,126 @@ export function Main() {
 
   return (
     <>
-      <Box maxWidth="max-content" margin="0 auto" paddingBottom="32px">
-        <ModalSimulationTimePoints isOpen={isOpen} onClose={onClose} />
-        {timeAdded ? (
-          <Text color="#fff">Horario adicionado</Text>
-        ) : (
-          <Text textAlign="center" fontSize="2xl" color="#fff">
-            {/* Adicione seus horários */}
-          </Text>
-        )}
-        <Flex
-          maxWidth="container.lg"
-          margin="0 auto"
-          gap="8px"
-          padding="32px"
-          alignItems="center"
-          justifyContent="center"
-          // height="360px"
-          flexDirection={{ base: "column", lg: "row" }}
-        >
-          <Box height="360px">
+      <ModalSimulationTimePoints isOpen={isOpen} onClose={onClose} />
+      <Grid templateColumns="400px 1fr" gap={6}>
+        <GridItem height="100%">
+          <Flex
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+          >
             <CalendarDatePicker
               onSelectedDate={setSelected}
               selectedDate={selected}
             />
-          </Box>
-          <FormInput
-            entryOne={entryOne}
-            entryTwo={entryTwo}
-            exitOne={exitOne}
-            exitTwo={exitTwo}
-            setEntryOne={setEntryOne}
-            setEntryTwo={setEntryTwo}
-            setExitOne={setExitOne}
-            setExitTwo={setExitTwo}
-            timeAdded={timeAdded}
-            handleSendValues={handleSendValues}
-          />
-        </Flex>
-
-        {loading && (
-          <Flex justifyContent="center">
-            <Spinner color="gray" size="xl" />
+            <FormInput
+              entryOne={entryOne}
+              entryTwo={entryTwo}
+              exitOne={exitOne}
+              exitTwo={exitTwo}
+              setEntryOne={setEntryOne}
+              setEntryTwo={setEntryTwo}
+              setExitOne={setExitOne}
+              setExitTwo={setExitTwo}
+              timeAdded={timeAdded}
+              handleSendValues={handleSendValues}
+              selected={selected}
+            />
           </Flex>
-        )}
+        </GridItem>
+        <GridItem height="100%">
+          <Flex
+            justifyContent={{ base: "center", lg: "flex-start" }}
+            alignItems="center"
+            flexDirection={{ base: "column", lg: "row" }}
+            gap="8"
+            marginBottom="4"
+          >
+            <Flex gap="2">
+              <ButtonGroup size="sm" isAttached variant="solid">
+                <IconButton
+                  size="sm"
+                  disabled={monthSelected === 1}
+                  aria-label="back month"
+                  icon={<BsFillArrowLeftCircleFill />}
+                  onClick={handleBackMonth}
+                />
+                <Button
+                  size="sm"
+                  w="20"
+                  _hover={{ cursor: "not-allowed" }}
+                  background="#fff"
+                >
+                  {formatMonthDateFns(monthSelected)}
+                </Button>
+                <IconButton
+                  disabled={monthSelected === 12}
+                  aria-label="next month"
+                  size="sm"
+                  icon={<BsFillArrowRightCircleFill />}
+                  onClick={handleNextMonth}
+                />
+              </ButtonGroup>
 
-        <Flex
-          w={{ base: "100%", lg: "container.lg" }}
-          justifyContent={{ base: "center", lg: "space-between" }}
-          alignItems="center"
-          flexDirection={{ base: "column", lg: "row" }}
-          gap="10px"
-        >
-          <ButtonGroup size="sm" isAttached variant="solid">
-            <IconButton
-              size="md"
-              disabled={monthSelected === 1}
-              aria-label="back month"
-              icon={<BsFillArrowLeftCircleFill />}
-              onClick={handleBackMonth}
-            />
-            <Button
-              size="md"
-              w="24"
-              _hover={{ cursor: "not-allowed" }}
-              background="#fff"
-            >
-              {formatMonthDateFns(monthSelected)}
-            </Button>
-            <IconButton
-              disabled={monthSelected === 12}
-              aria-label="next month"
-              size="md"
-              icon={<BsFillArrowRightCircleFill />}
-              onClick={handleNextMonth}
-            />
-          </ButtonGroup>
+              <ButtonGroup size="sm" isAttached variant="solid">
+                <IconButton
+                  size="sm"
+                  aria-label="year month"
+                  icon={<BsFillArrowLeftCircleFill />}
+                  onClick={handleBackYear}
+                />
+                <Button
+                  size="sm"
+                  _hover={{ cursor: "not-allowed" }}
+                  background="#fff"
+                >
+                  {yearSelected}
+                </Button>
+                <IconButton
+                  aria-label="year month"
+                  size="sm"
+                  icon={<BsFillArrowRightCircleFill />}
+                  onClick={handleNextYear}
+                />
+              </ButtonGroup>
+            </Flex>
 
-          <ButtonGroup size="sm" isAttached variant="solid">
-            <IconButton
-              size="md"
-              aria-label="year month"
-              icon={<BsFillArrowLeftCircleFill />}
-              onClick={handleBackYear}
-            />
-            <Button
-              size="md"
-              w="24"
-              _hover={{ cursor: "not-allowed" }}
-              background="#fff"
-            >
-              {yearSelected}
-            </Button>
-            <IconButton
-              aria-label="year month"
-              size="md"
-              icon={<BsFillArrowRightCircleFill />}
-              onClick={handleNextYear}
-            />
-          </ButtonGroup>
-
-          {dateTime?.length > 0 ? (
-            <Text
-              padding="0 32px"
-              color={isTimeNegativeOrPositive === 1 ? "green" : "red"}
-            >{`Total de tempo ${
-              isTimeNegativeOrPositive === 1 ? "Ganhos" : "Restantes"
-            } no mês de ${formatMonthDateFns(
-              monthSelected
-            )}, ${timeHor} horas e ${timeMinutes} minutos`}</Text>
+            {!isLoading && (
+              <>
+                {dateTime?.length > 0 ? (
+                  <Text
+                    fontSize="0.9rem"
+                    fontWeight="bold"
+                    color={isTimeNegativeOrPositive === 1 ? "green" : "red"}
+                  >{`Total de tempo ${
+                    isTimeNegativeOrPositive === 1 ? "Ganhos" : "Restantes"
+                  } no mês de ${formatMonthDateFns(
+                    monthSelected
+                  )}, ${timeHor} horas e ${timeMinutes} minutos`}</Text>
+                ) : (
+                  <Text
+                    fontSize="0.9rem"
+                    fontWeight="bold"
+                    color={isTimeNegativeOrPositive === 1 ? "green" : "red"}
+                  >
+                    Não existem horários cadastrados neste mês
+                  </Text>
+                )}
+              </>
+            )}
+          </Flex>
+          {isLoading ? (
+            <Flex w="100%" h="100%" alignItems="center" justifyContent="center">
+              <Spinner size="xl" color="white" />
+            </Flex>
           ) : (
-            <Text color={isTimeNegativeOrPositive === 1 ? "green" : "red"}>
-              Não existem horários cadastrados neste mês
-            </Text>
-          )}
-        </Flex>
-
-        {!loading && dateTime?.length > 0 && (
-          <>
             <TableComponent
               handleShowInfoTime={handleShowInfoTime}
               handleDeletePoint={handleDeletePoint}
             />
-          </>
-        )}
-      </Box>
+          )}
+        </GridItem>
+      </Grid>
     </>
   );
 }

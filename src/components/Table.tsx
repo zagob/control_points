@@ -35,20 +35,20 @@ export function TableComponent({
       <Box
         borderRadius="12px"
         background="blackAlpha.300"
-        height="300px"
+        height="100%"
         overflowY="scroll"
         padding="0 32px"
       >
         <TableContainer color="#fff">
-          <Table variant="unstyled">
+          <Table variant="unstyled" size="sm">
             <Thead>
               <Tr color="white">
-                <Th fontSize="1xl">Data</Th>
-                <Th fontSize="1xl">Entrada 1</Th>
-                <Th fontSize="1xl">Saida 1</Th>
-                <Th fontSize="1xl">Entrada 2</Th>
-                <Th fontSize="1xl">Saida 2</Th>
-                <Th fontSize="1xl">Bonus</Th>
+                <Th>Data</Th>
+                <Th>Entrada 1</Th>
+                <Th>Saida 1</Th>
+                <Th>Entrada 2</Th>
+                <Th>Saida 2</Th>
+                <Th>Bonus</Th>
                 <Th fontSize="1xl"></Th>
                 <Th></Th>
               </Tr>

@@ -6,11 +6,6 @@ export function DateTime() {
     2,
     "0"
   )}-${String(data.getMonth()).padStart(2, "0")}`;
-  console.log(
-    `${data.getFullYear()}-${String(data.getDay()).padStart(2, "0")}-${String(
-      data.getMonth()
-    ).padStart(2, "0")}`
-  );
   return (
     <Input
       type="month"

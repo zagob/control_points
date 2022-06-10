@@ -13,6 +13,7 @@ interface FormInputParams {
   setExitTwo: Dispatch<SetStateAction<string>>;
   timeAdded: boolean;
   handleSendValues: (isSmiluation?: boolean) => Promise<void>;
+  selected: Date;
 }
 
 export function FormInput({
@@ -26,6 +27,7 @@ export function FormInput({
   setExitTwo,
   timeAdded,
   handleSendValues,
+  selected
 }: FormInputParams) {
   return (
     <VStack spacing={5} margin="auto 0">
@@ -73,7 +75,8 @@ export function FormInput({
               entryOne.length === 0 ||
               entryTwo.length === 0 ||
               exitOne.length === 0 ||
-              exitTwo.length === 0
+              exitTwo.length === 0 ||
+              !selected
             }
             _hover={{
               _disabled: {},
@@ -95,7 +98,8 @@ export function FormInput({
               entryOne.length === 0 ||
               entryTwo.length === 0 ||
               exitOne.length === 0 ||
-              exitTwo.length === 0
+              exitTwo.length === 0 ||
+              !selected
             }
             onClick={() => handleSendValues(true)}
           >

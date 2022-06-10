@@ -33,8 +33,6 @@ export function ModalSimulationTimePoints({
   const { dateTimeObject } = useContext(TimeContext);
   const totalTimeMinutes = 480;
 
-  console.log('dateTimeObject',dateTimeObject)
-
   return (
     <>
       <Modal isCentered isOpen={isOpen} onClose={onClose}>
@@ -43,7 +41,7 @@ export function ModalSimulationTimePoints({
           <ModalHeader>
             {dateTimeObject !== null &&
               format(
-                new Date(dateTimeObject?.selectedDate),
+                new Date(dateTimeObject.selectedDate),
                 `'Dia' dd 'de' MMMM - (eeee)`,
                 {
                   locale: pt,
