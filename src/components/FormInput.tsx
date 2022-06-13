@@ -1,4 +1,5 @@
 import { Button, Flex, FormControl, FormLabel, VStack } from "@chakra-ui/react";
+import InputMask from "react-input-mask";
 import { Dispatch, SetStateAction } from "react";
 import { InputTime } from "./InputTime";
 
@@ -27,7 +28,7 @@ export function FormInput({
   setExitTwo,
   timeAdded,
   handleSendValues,
-  selected
+  selected,
 }: FormInputParams) {
   return (
     <VStack spacing={5} margin="auto 0">
@@ -36,6 +37,7 @@ export function FormInput({
           <FormControl>
             <FormLabel color="#fff">Entrada 1</FormLabel>
             <InputTime
+              as={InputMask}
               value={entryOne}
               onChange={(e) => setEntryOne(e.target.value)}
             />

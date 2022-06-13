@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   ButtonGroup,
   Flex,
@@ -8,7 +7,6 @@ import {
   IconButton,
   Spinner,
   Text,
-  useBoolean,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -17,12 +15,12 @@ import { dateTimeProps, TimeContext } from "../contexts/TimeContext";
 import { useAuth } from "../hooks/useAuth";
 
 import { ModalSimulationTimePoints } from "./modals/ModalSimulationTimePoints";
+import { ModalDeletePoint } from "./modals/ModalDeletePoint";
 import { TableComponent } from "./Table";
 
 import { CalendarDatePicker } from "./Calendar";
 import { api } from "../services/api";
 import {
-  BsArrowClockwise,
   BsFillArrowLeftCircleFill,
   BsFillArrowRightCircleFill,
 } from "react-icons/bs";
@@ -38,7 +36,6 @@ export function Main() {
   const { user } = useAuth();
   const { onOpen, isOpen, onClose } = useDisclosure();
 
-  const [loading, setLoading] = useBoolean();
   const {
     dateTime,
     setDateTime,
@@ -48,13 +45,16 @@ export function Main() {
     yearSelected,
     setYearSelected,
   } = useContext(TimeContext);
+
+  const [modal, setModal] = useState("ModalShowInfo");
+  const [idTime, setIdTime] = useState(undefined);
   const [entryOne, setEntryOne] = useState("");
   const [exitOne, setExitOne] = useState("");
   const [entryTwo, setEntryTwo] = useState("");
   const [exitTwo, setExitTwo] = useState("");
   const [selected, setSelected] = useState<Date>(new Date());
 
-  const { data, isFetching, error, isLoading } = useQuery(
+  const { data, isLoading } = useQuery(
     ["data"],
     async () => {
       const response = await api.get(
@@ -115,6 +115,7 @@ export function Main() {
     queryClient.refetchQueries();
 
     if (isSimulation) {
+      setModal("ModalShowInfo");
       setDateTimeObject(response.data);
       onOpen();
       return;
@@ -133,21 +134,24 @@ export function Main() {
   }
 
   async function handleShowInfoTime(item: dateTimeProps) {
+    setModal("ModalShowInfo");
     const response = await api.get(`/points/listOne/${item.id}`);
 
     setDateTimeObject(response.data);
     onOpen();
   }
 
-  async function handleDeletePoint(id: string) {
-    await api.delete(`/points/delete/${id}`);
+  function handleDeletePoint(id: string) {
+    setIdTime(id);
+    setModal("ModalDeletePointHour");
+    onOpen();
+  }
 
-    setDateTime((old) => {
-      return {
-        ...old,
-        listDateMonth: old.filter((item) => item.id !== id),
-      };
-    });
+  async function removePoint(id: string) {
+    await api.delete(`/points/delete/${id}`);
+    onClose();
+    setDateTime((old) => old.filter((item) => item.id !== id));
+    queryClient.refetchQueries();
   }
 
   function handleBackMonth() {
@@ -176,9 +180,24 @@ export function Main() {
 
   return (
     <>
-      <ModalSimulationTimePoints isOpen={isOpen} onClose={onClose} />
-      <Grid templateColumns={{ base: '1fr', lg: '400px 1fr' }} gap={6} >
-        <GridItem height="100%">
+      {modal === "ModalShowInfo" && (
+        <ModalSimulationTimePoints isOpen={isOpen} onClose={onClose} />
+      )}
+      {modal === "ModalDeletePointHour" && (
+        <ModalDeletePoint
+          isOpen={isOpen}
+          onClose={onClose}
+          data={idTime}
+          onDeletePoint={removePoint}
+        />
+      )}
+
+      <Grid templateColumns={{ base: "1fr", lg: "400px 1fr" }} gap={6}>
+        <GridItem
+          height="100%"
+          boxShadow="dark-lg"
+          paddingBottom="32px"
+        >
           <Flex
             flexDirection="column"
             alignItems="center"
@@ -264,7 +283,7 @@ export function Main() {
               <>
                 {dateTime?.length > 0 && (
                   <Text
-                    fontSize={{ base: '0.6rem', lg: '0.9rem' }}
+                    fontSize={{ base: "0.6rem", lg: "0.9rem" }}
                     fontWeight="bold"
                     color={isTimeNegativeOrPositive === 1 ? "green" : "red"}
                   >{`Total de tempo ${
