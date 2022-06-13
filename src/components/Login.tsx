@@ -36,7 +36,7 @@ export function Login() {
       padding="0 2rem"
     >
       <Flex gap="10px" flexDirection="column" alignItems="center">
-        <Flex width="100%">
+        {/* <Flex width="100%">
           <Flex
             flexDirection={{ base: "column", lg: "column" }}
             alignItems="center"
@@ -50,14 +50,15 @@ export function Login() {
             </Heading>
           </Flex>
           <IoMdClock fontSize="120px" color="#fff" />
-        </Flex>
+        </Flex> */}
         <Flex
           w={{ base: "", lg: "100%" }}
           gap="12px"
           justifyContent="space-around"
           flexDirection="column"
         >
-          <HStack>
+          <IoMdClock fontSize="120px" color="#fff" />
+          {/* <HStack>
             <FormControl>
               <FormLabel color="#fff">Entrada 1</FormLabel>
               <InputTime />
@@ -76,11 +77,11 @@ export function Login() {
               <FormLabel color="#fff">Saída 2</FormLabel>
               <InputTime />
             </FormControl>
-          </HStack>
-          <Button
+          </HStack> */}
+          {/* <Button
             textTransform="uppercase"
             padding={{ base: "10px 0", lg: "32px 0" }}
-            fontSize={{ base: "18", lg: "26px" }}
+            fontSize={{ base: "18", lg: "26" }}
             fontWeight="700"
             background="green.400"
             w="100%"
@@ -88,7 +89,7 @@ export function Login() {
             onClick={handleSimulation}
           >
             Simular
-          </Button>
+          </Button> */}
         </Flex>
         <Box w="full" mt="32px">
           <Text
@@ -106,8 +107,9 @@ export function Login() {
             gap="12px"
             color="#fff"
             _hover={{ opacity: "0.8" }}
+            padding={{ base: '', lg: '4' }}
             onClick={signAndCreateUserDB}
-            fontSize={{ base: "0.7rem", lg: "2rem" }}
+            fontSize={{ base: "0.7rem", lg: "1rem" }}
           >
             <FcGoogle fontSize="32px" />
             Fazer login com Google
