@@ -38,7 +38,7 @@ export function CalendarDatePicker({
     }
 
     getMonthDate();
-  }, [monthSelected]);
+  }, [monthSelected, dateTime]);
 
   // const disabledDays = dateTime?.listDateMonth.map(
   //   (item) => new Date(item.selectedDate)

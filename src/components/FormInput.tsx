@@ -43,21 +43,22 @@ export function FormInput({
             />
           </FormControl>
           <FormControl>
-            <FormLabel color="#fff">Saída 1</FormLabel>
-            <InputTime
-              value={exitOne}
-              onChange={(e) => setExitOne(e.target.value)}
-            />
-          </FormControl>
-        </VStack>
-        <VStack spacing={10}>
-          <FormControl>
             <FormLabel color="#fff">Entrada 2</FormLabel>
             <InputTime
               value={entryTwo}
               onChange={(e) => setEntryTwo(e.target.value)}
             />
           </FormControl>
+        </VStack>
+        <VStack spacing={10}>
+          <FormControl>
+            <FormLabel color="#fff">Saída 1</FormLabel>
+            <InputTime
+              value={exitOne}
+              onChange={(e) => setExitOne(e.target.value)}
+            />
+          </FormControl>
+
           <FormControl>
             <FormLabel color="#fff">Saída 2</FormLabel>
             <InputTime
