@@ -31,7 +31,6 @@ interface TimeProviderProps {
   children: ReactNode;
 }
 
-
 interface TimeContextProps {
   dateTime: dateTimeProps[] | null;
   setDateTime: Dispatch<SetStateAction<dateTimeProps[]>>;
@@ -46,8 +45,6 @@ interface TimeContextProps {
 export const TimeContext = createContext({} as TimeContextProps);
 
 export function TimeProvider({ children }: TimeProviderProps) {
-  const { user } = useAuth();
-
   const [dateTime, setDateTime] = useState<dateTimeProps[] | null>();
   const [dateTimeObject, setDateTimeObject] = useState<dateTimeProps | null>(
     null

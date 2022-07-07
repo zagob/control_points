@@ -34,8 +34,6 @@ export function ModalDeletePoint({ isOpen, onClose, data, onDeletePoint }: Modal
   const { dateTimeObject } = useContext(TimeContext);
   const totalTimeMinutes = 480;
 
-  console.log('idTime', data)
-
   return (
     <>
       <Modal isCentered isOpen={isOpen} onClose={onClose}>

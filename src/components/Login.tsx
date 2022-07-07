@@ -1,17 +1,5 @@
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Heading,
-  HStack,
-  Text,
-  useDimensions,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { IoMdClock } from "react-icons/io";
-import { InputTime } from "../components/InputTime";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../hooks/useAuth";
 
@@ -23,10 +11,6 @@ export function Login() {
     await handleAuthState();
   }
 
-  async function handleSimulation() {
-
-  }
-  
   return (
     <Flex
       w="100%"
@@ -36,21 +20,6 @@ export function Login() {
       padding="0 2rem"
     >
       <Flex gap="10px" flexDirection="column" alignItems="center">
-        {/* <Flex width="100%">
-          <Flex
-            flexDirection={{ base: "column", lg: "column" }}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Heading color="#fff" fontSize={{ base: "0.7rem", lg: "1.5rem" }}>
-              CONTROLE DE FORMA FÁCIL
-            </Heading>
-            <Heading color="#fff" fontSize={{ base: "0.7rem", lg: "1.5rem" }}>
-              SEUS PONTOS DE HORÁRIOS.
-            </Heading>
-          </Flex>
-          <IoMdClock fontSize="120px" color="#fff" />
-        </Flex> */}
         <Flex
           w={{ base: "", lg: "100%" }}
           gap="12px"
@@ -58,38 +27,6 @@ export function Login() {
           flexDirection="column"
         >
           <IoMdClock fontSize="120px" color="#fff" />
-          {/* <HStack>
-            <FormControl>
-              <FormLabel color="#fff">Entrada 1</FormLabel>
-              <InputTime />
-            </FormControl>
-            <FormControl>
-              <FormLabel color="#fff">Saída 1</FormLabel>
-              <InputTime />
-            </FormControl>
-          </HStack>
-          <HStack>
-            <FormControl>
-              <FormLabel color="#fff">Entrada 2</FormLabel>
-              <InputTime />
-            </FormControl>
-            <FormControl>
-              <FormLabel color="#fff">Saída 2</FormLabel>
-              <InputTime />
-            </FormControl>
-          </HStack> */}
-          {/* <Button
-            textTransform="uppercase"
-            padding={{ base: "10px 0", lg: "32px 0" }}
-            fontSize={{ base: "18", lg: "26" }}
-            fontWeight="700"
-            background="green.400"
-            w="100%"
-            _hover={{ opacity: "0.8" }}
-            onClick={handleSimulation}
-          >
-            Simular
-          </Button> */}
         </Flex>
         <Box w="full" mt="32px">
           <Text
@@ -107,7 +44,7 @@ export function Login() {
             gap="12px"
             color="#fff"
             _hover={{ opacity: "0.8" }}
-            padding={{ base: '', lg: '4' }}
+            padding={{ base: "", lg: "4" }}
             onClick={signAndCreateUserDB}
             fontSize={{ base: "0.7rem", lg: "1rem" }}
           >

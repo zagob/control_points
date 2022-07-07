@@ -1,18 +1,19 @@
 import {
+  Box,
   Button,
-  ButtonGroup,
   Flex,
   Grid,
   GridItem,
-  IconButton,
+  Heading,
   Spinner,
   Text,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { dateTimeProps, TimeContext } from "../contexts/TimeContext";
 import { useAuth } from "../hooks/useAuth";
+import { max } from "date-fns";
 
 import { ModalSimulationTimePoints } from "./modals/ModalSimulationTimePoints";
 import { ModalDeletePoint } from "./modals/ModalDeletePoint";
@@ -20,16 +21,15 @@ import { TableComponent } from "./Table";
 
 import { CalendarDatePicker } from "./Calendar";
 import { api } from "../services/api";
-import {
-  BsFillArrowLeftCircleFill,
-  BsFillArrowRightCircleFill,
-} from "react-icons/bs";
 import { ClipboardText } from "phosphor-react";
 import { formatMonthDateFns } from "../utils/formatDate";
 
 import { useQuery } from "react-query";
 import { queryClient } from "../services/queryClient";
 import { FormInput } from "./FormInput";
+import { ControlChangeDateButton } from "./ControlChangeDateButton";
+import { bankBalanceHours } from "../utils/verifyTotalTimeBank";
+import { ModalAddBankBalance } from "./modals/ModalAddBankBalance";
 
 export function Main() {
   const toast = useToast();
@@ -46,13 +46,71 @@ export function Main() {
     setYearSelected,
   } = useContext(TimeContext);
 
-  const [modal, setModal] = useState("ModalShowInfo");
+  const [modal, setModal] = useState("");
   const [idTime, setIdTime] = useState(undefined);
   const [entryOne, setEntryOne] = useState("");
   const [exitOne, setExitOne] = useState("");
   const [entryTwo, setEntryTwo] = useState("");
   const [exitTwo, setExitTwo] = useState("");
   const [selected, setSelected] = useState<Date>(new Date());
+
+  const [balanceBank, setBalanceBank] = useState("00:00");
+
+  const [inputStatusBankBalance, setStatusHourBankBalance] = useState(0);
+  const [inputHourBankBalance, setInputHourBankBalance] = useState("00");
+  const [inputMinuteBankBalance, setInputMinuteBankBalance] = useState("00");
+
+  const [allBankBalanceUser, setAllBankBalanceUser] = useState([]);
+
+  async function createbBankBalance() {
+    const response = await api.post(`/bankBalance/create/${user.id}`, {
+      time: `${inputHourBankBalance.padStart(
+        2,
+        "0"
+      )}:${inputMinuteBankBalance.padStart(2, "0")}`,
+      verifyMinutesPositiveOrNegative: inputStatusBankBalance,
+      date: new Date().toISOString(),
+    });
+
+    if (!response) {
+      toast({
+        title: "Não foi possivel criar saldo de horas no banco",
+        position: "top",
+        status: "error",
+        isClosable: true,
+      });
+      return;
+    }
+
+    setBalanceBank(response.data.time);
+    setAllBankBalanceUser((old) => [...old, response.data]);
+  }
+
+  useEffect(() => {
+    async function getByYearBankBalance() {
+      const response = await api.get(
+        `/bankBalance/getByYear/${user.id}?year=${yearSelected}`
+      );
+
+      if (response.data.length === 0) {
+        setAllBankBalanceUser([]);
+        setBalanceBank("00:00");
+        return;
+      }
+
+      setAllBankBalanceUser(response.data);
+
+      const recentTime = max(response.data.map(({ date }) => new Date(date)));
+      const objectReturn = response.data.find(
+        (item) => item.date === recentTime.toISOString()
+      );
+
+      setBalanceBank(objectReturn.time);
+      setStatusHourBankBalance(objectReturn.verifyMinutesPositiveOrNegative);
+    }
+
+    getByYearBankBalance();
+  }, [user, yearSelected]);
 
   const { data, isLoading } = useQuery(
     ["data"],
@@ -120,6 +178,25 @@ export function Main() {
       onOpen();
       return;
     }
+
+    const totalMinutes = response.data.totalMinutes;
+    const status = response.data.definedStatus;
+    const objectBankBalanceHour = bankBalanceHours(
+      totalMinutes,
+      status,
+      balanceBank
+    );
+
+    const responseBankBalance = await api.post(
+      `/bankBalance/create/${user.id}`,
+      objectBankBalanceHour
+    );
+
+    setBalanceBank(responseBankBalance.data.time);
+    setStatusHourBankBalance(
+      responseBankBalance.data.verifyMinutesPositiveOrNegative
+    );
+
     setEntryOne("");
     setExitOne("");
     setEntryTwo("");
@@ -178,6 +255,23 @@ export function Main() {
     queryClient.refetchQueries();
   }
 
+  function handleOpenModalAddBankBalance() {
+    setModal("ModalAddBankBalance");
+    onOpen();
+  }
+
+  function handleChangeHourBankBalance(value: string) {
+    setInputHourBankBalance(value);
+  }
+
+  function handleChangeMinuteBankBalance(value: string) {
+    setInputMinuteBankBalance(value);
+  }
+
+  function handleChangeStatusBankBalance(value: number) {
+    setStatusHourBankBalance(value);
+  }
+
   return (
     <>
       {modal === "ModalShowInfo" && (
@@ -192,21 +286,77 @@ export function Main() {
         />
       )}
 
+      {modal === "ModalAddBankBalance" && (
+        <ModalAddBankBalance
+          isOpen={isOpen}
+          onClose={onClose}
+          valueHour={inputHourBankBalance}
+          valueMinute={inputMinuteBankBalance}
+          onChangeValueStatus={handleChangeStatusBankBalance}
+          onChangeValueHour={handleChangeHourBankBalance}
+          onChangeValueMinute={handleChangeMinuteBankBalance}
+          onSendBankBalance={createbBankBalance}
+        />
+      )}
+
       <Grid templateColumns={{ base: "1fr", lg: "400px 1fr" }} gap={6}>
-        <GridItem
-          height="100%"
-          boxShadow="dark-lg"
-          paddingBottom="32px"
-        >
+        <GridItem height="100%" boxShadow="dark-lg" paddingBottom="32px">
+          {/* <button style={{ background: "white" }} onClick={testeBankBalance}>
+            asd
+          </button> */}
           <Flex
             flexDirection="column"
             alignItems="center"
             justifyContent="center"
           >
-            <CalendarDatePicker
-              onSelectedDate={setSelected}
-              selectedDate={selected}
-            />
+            {allBankBalanceUser.length === 0 ? (
+              <>
+                <Text color="white">Voçê não tem saldo de horas</Text>
+                <Flex mb="4" justifyContent="space-evenly" w="100%">
+                  <Button
+                    onClick={handleOpenModalAddBankBalance}
+                    fontSize="sm"
+                    bg="green.800"
+                    color="white"
+                  >
+                    Adicionar
+                  </Button>
+                  <Button fontSize="sm" onClick={createbBankBalance}>
+                    Começar zerado
+                  </Button>
+                </Flex>
+              </>
+            ) : (
+              <Flex alignItems="center" gap="4" mb="2">
+                <Heading fontSize="md" color="white">
+                  Saldo Horas Banco:{" "}
+                </Heading>
+                <Text
+                  borderRadius="4"
+                  padding="0 4px"
+                  color={
+                    inputStatusBankBalance === 1
+                      ? "green"
+                      : inputStatusBankBalance === 0
+                      ? "gray"
+                      : "red"
+                  }
+                >
+                  {balanceBank}
+                </Text>
+              </Flex>
+            )}
+
+            <Box
+              border="1px solid"
+              borderColor={selected && "green.700"}
+              borderRadius="2xl"
+            >
+              <CalendarDatePicker
+                onSelectedDate={setSelected}
+                selectedDate={selected}
+              />
+            </Box>
             <FormInput
               entryOne={entryOne}
               entryTwo={entryTwo}
@@ -230,54 +380,16 @@ export function Main() {
             gap="8"
             marginBottom="4"
           >
-            <Flex gap="2">
-              <ButtonGroup size="sm" isAttached variant="solid">
-                <IconButton
-                  size="sm"
-                  disabled={monthSelected === 1}
-                  aria-label="back month"
-                  icon={<BsFillArrowLeftCircleFill />}
-                  onClick={handleBackMonth}
-                />
-                <Button
-                  size="sm"
-                  w="20"
-                  _hover={{ cursor: "not-allowed" }}
-                  background="#fff"
-                >
-                  {formatMonthDateFns(monthSelected)}
-                </Button>
-                <IconButton
-                  disabled={monthSelected === 12}
-                  aria-label="next month"
-                  size="sm"
-                  icon={<BsFillArrowRightCircleFill />}
-                  onClick={handleNextMonth}
-                />
-              </ButtonGroup>
-
-              <ButtonGroup size="sm" isAttached variant="solid">
-                <IconButton
-                  size="sm"
-                  aria-label="year month"
-                  icon={<BsFillArrowLeftCircleFill />}
-                  onClick={handleBackYear}
-                />
-                <Button
-                  size="sm"
-                  _hover={{ cursor: "not-allowed" }}
-                  background="#fff"
-                >
-                  {yearSelected}
-                </Button>
-                <IconButton
-                  aria-label="year month"
-                  size="sm"
-                  icon={<BsFillArrowRightCircleFill />}
-                  onClick={handleNextYear}
-                />
-              </ButtonGroup>
-            </Flex>
+            <ControlChangeDateButton
+              disabledEndMonth={monthSelected === 1}
+              disabledFirstMonth={monthSelected === 12}
+              monthSelected={monthSelected}
+              yearSelected={yearSelected}
+              onHandleBackMonth={handleBackMonth}
+              onHandleNextMonth={handleNextMonth}
+              onHandleBackYear={handleBackYear}
+              onHandleNextYear={handleNextYear}
+            />
 
             {!isLoading && (
               <>
@@ -307,7 +419,6 @@ export function Main() {
                   handleDeletePoint={handleDeletePoint}
                 />
               ) : (
-                // <Text color="#fff">n tem</Text>
                 <Flex
                   w="100%"
                   h="100%"

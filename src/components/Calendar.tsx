@@ -40,17 +40,6 @@ export function CalendarDatePicker({
     getMonthDate();
   }, [monthSelected, dateTime]);
 
-  // const disabledDays = dateTime?.listDateMonth.map(
-  //   (item) => new Date(item.selectedDate)
-  // );
-
-  // const disabledDays = [
-  //   new Date(2022, 4, 10),
-  //   new Date(2022, 4, 12),
-  //   new Date(2022, 4, 20),
-  //   // { from: new Date(2022, 4, 18), to: new Date(2022, 4, 29) }
-  // ];
-
   function handleChangeMonth(event: Date) {
     setMonthSelected(event.getMonth() + 1);
     queryClient.removeQueries();
@@ -62,6 +51,7 @@ export function CalendarDatePicker({
       <DayPicker
         mode="single"
         month={new Date(2022, monthSelected - 1)}
+
         onMonthChange={(event) => handleChangeMonth(event)}
         locale={ptBr}
         disabled={[{ dayOfWeek: [0, 6] }, ...disabledDays]}
@@ -73,10 +63,11 @@ export function CalendarDatePicker({
         modifiersStyles={{
           selected: {
             background: "#fff",
-            color: "#000",
+            color: "red",
           },
           today: {
-            color: "red",
+            color: "#000",
+            background: "#fff"
           },
           range_end: {
             color: "#000",

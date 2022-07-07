@@ -1,5 +1,4 @@
 import { Button, Flex, FormControl, FormLabel, VStack } from "@chakra-ui/react";
-import InputMask from "react-input-mask";
 import { Dispatch, SetStateAction } from "react";
 import { InputTime } from "./InputTime";
 
@@ -37,7 +36,7 @@ export function FormInput({
           <FormControl>
             <FormLabel color="#fff">Entrada 1</FormLabel>
             <InputTime
-              as={InputMask}
+              tabIndex={1}
               value={entryOne}
               onChange={(e) => setEntryOne(e.target.value)}
             />
@@ -45,6 +44,7 @@ export function FormInput({
           <FormControl>
             <FormLabel color="#fff">Entrada 2</FormLabel>
             <InputTime
+              tabIndex={3}
               value={entryTwo}
               onChange={(e) => setEntryTwo(e.target.value)}
             />
@@ -54,6 +54,7 @@ export function FormInput({
           <FormControl>
             <FormLabel color="#fff">Saída 1</FormLabel>
             <InputTime
+              tabIndex={2}
               value={exitOne}
               onChange={(e) => setExitOne(e.target.value)}
             />
@@ -62,6 +63,7 @@ export function FormInput({
           <FormControl>
             <FormLabel color="#fff">Saída 2</FormLabel>
             <InputTime
+              tabIndex={4}
               value={exitTwo}
               onChange={(e) => setExitTwo(e.target.value)}
             />
@@ -71,6 +73,7 @@ export function FormInput({
       <Flex gap="10px" w="full">
         <>
           <Button
+            tabIndex={5}
             w="full"
             background="#ffd373"
             onClick={() => handleSendValues()}
@@ -91,6 +94,7 @@ export function FormInput({
           </Button>
 
           <Button
+            tabIndex={6}
             _hover={{
               _disabled: {},
               opacity: "0.4",

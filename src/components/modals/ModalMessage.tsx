@@ -6,31 +6,19 @@ import {
   ModalCloseButton,
   Text,
 } from "@chakra-ui/react";
-import { TimeContext } from "../../contexts/TimeContext";
-
-import { useContext } from "react";
 
 interface ModalComponentProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function ModalMessage({
-  isOpen,
-  onClose,
-}: ModalComponentProps) {
-  const { dateTimeObject } = useContext(TimeContext);
-  const totalTimeMinutes = 480;
-
-  console.log("dateTimeObject", dateTimeObject);
-
+export function ModalMessage({ isOpen, onClose }: ModalComponentProps) {
   return (
     <>
       <Modal isCentered isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
+        {/* <ModalOverlay /> */}
         <ModalContent background="#c3c3c3">
-         
-          <ModalCloseButton />
+          {/* <ModalCloseButton /> */}
           <ModalBody>
             <Text>Já existe uma mesma data cadastrada</Text>
           </ModalBody>
